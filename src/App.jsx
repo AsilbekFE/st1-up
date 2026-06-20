@@ -4,7 +4,7 @@ import SectionUniversity from "./components/SectionUniversity";
 
 export default function App() {
   return (
-    <div>
+    <div className="container mx-auto">
       <Navbar />
       {/* clone */}
       <main>
