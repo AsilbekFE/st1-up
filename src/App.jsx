@@ -8,8 +8,8 @@ export default function App() {
       <Navbar />
       {/* clone */}
       <main>
-        <Home/>
-        <SectionUniversity/>
+        <Home />
+        <SectionUniversity />
       </main>
       <footer></footer>
     </div>

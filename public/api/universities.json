@@ -1,0 +1,140 @@
+[
+  {
+    "id": 1,
+    "name": "INHA Universiteti",
+    "category": "Davlat",
+    "badge": "ENG YUQORI REYTING",
+    "badgeStyle": "bg-[#8af300]/95 text-black",
+    "image": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=85",
+    "description": "Koreya standartlari asosida Toshkentda IT va logistika sohasidagi yetakchi...",
+    "rankLabel": "@ IT bo'yicha #1",
+    "specialty": "IT va Texnologiya",
+    "city": "Toshkent",
+    "isFeatured": true
+  },
+  {
+    "id": 2,
+    "name": "WIUT",
+    "category": "Xalqaro",
+    "badge": "GLOBAL HAMKOR",
+    "badgeStyle": "bg-cyan-500/90 text-white",
+    "image": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=85",
+    "description": "Toshkentdagi Vestminster xalqaro universiteti Buyuk Britaniyaning nufuz...",
+    "rankLabel": "@ Biznes bo'yicha #1",
+    "specialty": "Biznes",
+    "city": "Toshkent",
+    "isFeatured": true
+  },
+  {
+    "id": 3,
+    "name": "Amity Universiteti",
+    "category": "Xalqaro",
+    "badge": "YANGI AVLOD",
+    "badgeStyle": "bg-emerald-400 text-black",
+    "image": "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=85",
+    "description": "Zamonaviy kampus va turli xil dasturlarga ega innovatsion global...",
+    "rankLabel": "@ Innovatsiya",
+    "specialty": "IT va Texnologiya",
+    "city": "Toshkent",
+    "isFeatured": true
+  },
+  {
+    "id": 4,
+    "name": "TATU",
+    "category": "Davlat",
+    "initial": "T",
+    "badge": "@ Texnologiya bo'yicha #2",
+    "description": "Toshkent axborot texnologiyalari universiteti. O'zbekiston texnologik...",
+    "specialty": "IT va Texnologiya",
+    "city": "Toshkent",
+    "isFeatured": false
+  },
+  {
+    "id": 5,
+    "name": "TDTU",
+    "category": "Davlat",
+    "initial": "T",
+    "badge": "@ Muhandislik bo'yicha #1",
+    "description": "Islom Karimov nomidagi Toshkent davlat texnika universiteti.",
+    "specialty": "IT va Texnologiya",
+    "city": "Toshkent",
+    "isFeatured": false
+  },
+  {
+    "id": 6,
+    "name": "O'zMU",
+    "category": "Davlat",
+    "initial": "O",
+    "badge": "@ Tadqiqot bo'yicha #1",
+    "description": "O'zbekiston Milliy universiteti. Zamonaviy tadqiqotlar bilan klassik...",
+    "specialty": "Tibbiyot",
+    "city": "Toshkent",
+    "isFeatured": false
+  },
+  {
+    "id": 7,
+    "name": "TDIU",
+    "category": "Davlat",
+    "initial": "T",
+    "badge": "@ Moliya bo'yicha #2",
+    "description": "Toshkent davlat iqtisodiyot universiteti. Moliyaviy kelajakni shakllantirish.",
+    "specialty": "Biznes",
+    "city": "Toshkent",
+    "isFeatured": false
+  },
+  {
+    "id": 8,
+    "name": "MDIS",
+    "category": "Xalqaro",
+    "initial": "M",
+    "badge": "@ Xalqaro #3",
+    "description": "Toshkent shahridagi Singapur menejmentni rivojlantirish instituti.",
+    "specialty": "Biznes",
+    "city": "Toshkent",
+    "isFeatured": false
+  },
+  {
+    "id": 9,
+    "name": "Kimyo Xalqaro",
+    "category": "Xususiy",
+    "initial": "K",
+    "badge": "@ Xususiy #1",
+    "description": "Global standartlarga ega ko'p tarmoqli xususiy universitet.",
+    "specialty": "Tibbiyot",
+    "city": "Toshkent",
+    "isFeatured": false
+  },
+  {
+    "id": 10,
+    "name": "Turin Politexnika",
+    "category": "Davlat",
+    "initial": "T",
+    "badge": "@ Muhandislik bo'yicha #2",
+    "description": "Avtomobilsozlik va mashinasozlik bo'yicha yuqori darajadagi bilim...",
+    "specialty": "IT va Texnologiya",
+    "city": "Toshkent",
+    "isFeatured": false
+  },
+  {
+    "id": 11,
+    "name": "SamDU",
+    "category": "Davlat",
+    "initial": "S",
+    "badge": "@ Tarixiy #1",
+    "description": "Samarqand davlat universiteti. Katta ilmiy salohiyatga ega maskan...",
+    "specialty": "San'at",
+    "city": "Samarqand",
+    "isFeatured": false
+  },
+  {
+    "id": 12,
+    "name": "TMA",
+    "category": "Davlat",
+    "initial": "T",
+    "badge": "@ Tibbiyot bo'yicha #1",
+    "description": "Toshkent tibbiyot akademiyasi. O'zbekistondagi yetakchi tibbiyot oliygohi.",
+    "specialty": "Tibbiyot",
+    "city": "Toshkent",
+    "isFeatured": false
+  }
+]
