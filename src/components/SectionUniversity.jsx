@@ -1,6 +1,7 @@
-
-export default function SectionUniversity() {
+export default function Hero() {
   return (
-    <div>SectionUniversity</div>
-  )
+   <div>
+    
+   </div>
+  );
 }
