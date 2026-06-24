@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import UniversityDetail from "./UniversityDetail";
 
 // Icons as inline SVG components to avoid dependencies
 const SlidersIcon = () => (
@@ -26,6 +27,31 @@ const CloseIcon = () => (
   </svg>
 );
 
+const PlayIcon = () => (
+  <svg className="w-5 h-5 mr-2 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+);
+
+const GlobeIcon = () => (
+  <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+  </svg>
+);
+
+const ShareIcon = () => (
+  <svg className="w-5 h-5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 10.742l4.636-2.318a2.5 2.5 0 11.758 1.517l-4.636 2.318a2.5 2.5 0 11-.758-1.517z" />
+  </svg>
+);
+
 export default function SectionUniversity() {
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +61,7 @@ export default function SectionUniversity() {
   const [activeCategory, setActiveCategory] = useState(null); // 'Davlat', 'Xususiy', 'Xalqaro'
   const [activeCity, setActiveCity] = useState("Barcha shaharlar");
   const [activeSpecialty, setActiveSpecialty] = useState(null); // String
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Interactive details modal
   const [selectedUniversity, setSelectedUniversity] = useState(null);
@@ -92,13 +119,25 @@ export default function SectionUniversity() {
       result = result.filter((u) => u.specialty === activeSpecialty);
     }
 
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (u) =>
+          u.name.toLowerCase().includes(q) ||
+          u.specialty.toLowerCase().includes(q) ||
+          u.city.toLowerCase().includes(q) ||
+          (u.description && u.description.toLowerCase().includes(q))
+      );
+    }
+
     return result;
-  }, [universities, activeCategory, activeCity, activeSpecialty]);
+  }, [universities, activeCategory, activeCity, activeSpecialty, searchQuery]);
 
   const clearFilters = () => {
     setActiveCategory(null);
     setActiveCity("Barcha shaharlar");
     setActiveSpecialty(null);
+    setSearchQuery("");
   };
 
   const handleUniversityClick = (uni) => {
@@ -136,7 +175,66 @@ export default function SectionUniversity() {
   const cities = ["Barcha shaharlar", ...new Set(universities.map((u) => u.city))];
 
   return (
-    <section className="py-12 bg-[#080d1a] px-4 md:px-8 max-w-7xl mx-auto rounded-3xl border border-slate-900/60 shadow-2xl relative overflow-hidden my-6">
+    <div className="min-h-screen bg-[#0c1528] text-white flex flex-col justify-between">
+      {/* SectionMain (Hero) */}
+      <header className="relative flex flex-col items-center justify-center px-4 py-20 text-center max-w-5xl mx-auto w-full">
+        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-cyan-900/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-violet-900/10 rounded-full blur-[150px] pointer-events-none" />
+        
+        <h1 className="relative text-5xl md:text-6xl font-black tracking-tight text-white leading-none">
+          O'zbekistondagi <br />
+          orzungizdagi <br />
+          <span className="block mt-2 text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-400 bg-clip-text">
+            universitetni toping
+          </span>
+        </h1>
+        
+        <p className="relative max-w-3xl mt-6 text-base md:text-lg text-slate-400 leading-relaxed">
+          Zamonaviy vositalar, interaktiv xaritalar va real vaqtdagi milliy reytinglar bilan
+          yuqori darajadagi ta'limni o'rganing. Kelajagingiz to'g'ri tanlovdan boshlanadi.
+        </p>
+        
+        <div className="relative flex gap-4 mt-8">
+          <button
+            onClick={() => document.getElementById("filters-section")?.scrollIntoView({ behavior: "smooth" })}
+            className="px-8 py-3.5 font-bold text-black transition-all bg-gradient-to-r from-cyan-400 to-violet-400 rounded-xl hover:opacity-90 shadow-[0_0_30px_rgba(0,245,255,0.3)] hover:scale-105 cursor-pointer"
+          >
+            Izlashni boshlash
+          </button>
+          <button
+            onClick={() => alert("Bu qanday ishlaydi: EduUZ orqali universitetlarni qidirish, solishtirish va ariza topshirish juda oson!")}
+            className="flex items-center px-6 py-3.5 font-bold transition-all bg-[#11192e]/80 border border-slate-800/80 rounded-xl text-slate-300 hover:border-slate-700 hover:text-white cursor-pointer"
+          >
+            <PlayIcon />
+            Bu qanday ishlaydi
+          </button>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative w-full max-w-3xl mt-12 px-4">
+          <div className="flex items-center gap-3 bg-[#11192e]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl p-3 shadow-xl transition-all focus-within:border-cyan-400/50">
+            <div className="pl-3">
+              <SearchIcon />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Nomi, mutaxassisligi yoki shahri bo'yicha qidirish..."
+              className="flex-1 bg-transparent border-none text-white placeholder-slate-500 text-sm focus:outline-none"
+            />
+            <button
+              onClick={() => document.getElementById("filters-section")?.scrollIntoView({ behavior: "smooth" })}
+              className="px-6 py-2.5 font-bold text-black bg-cyan-400 rounded-xl hover:bg-cyan-300 transition-colors text-sm shadow-[0_0_15px_rgba(34,211,238,0.3)] cursor-pointer"
+            >
+              Qidiruv
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Grid Content */}
+      <section id="filters-section" className="py-12 bg-[#080d1a] px-4 md:px-8 max-w-7xl mx-auto rounded-3xl border border-slate-900/60 shadow-2xl relative overflow-hidden my-6 w-full">
       {/* Background radial highlight glow */}
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-900/10 rounded-full blur-[120px] pointer-events-none" />
@@ -365,93 +463,39 @@ export default function SectionUniversity() {
         </div>
       </div>
 
-      {/* Interactive Detail Modal Dialog */}
       {selectedUniversity && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="bg-[#0f172a] border border-slate-800 rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl relative animate-scale-in">
-            
-            {/* Close button */}
-            <button 
-              onClick={() => setSelectedUniversity(null)}
-              className="absolute z-10 flex items-center justify-center w-8 h-8 border rounded-full shadow-md cursor-pointer top-4 right-4 bg-slate-900/80 backdrop-blur border-slate-800"
-            >
-              <CloseIcon />
-            </button>
-
-            {/* University image / decorative banner */}
-            <div className="relative w-full h-60">
-              {selectedUniversity.image ? (
-                <img 
-                  src={selectedUniversity.image} 
-                  alt={selectedUniversity.name} 
-                  className="object-cover w-full h-full"
-                />
-              ) : (
-                <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-cyan-950 to-violet-950">
-                  <span className="text-6xl font-black text-cyan-500/20">{selectedUniversity.initial}</span>
-                </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/40 to-transparent" />
-              
-              <div className="absolute bottom-6 left-6 right-6">
-                <span className="text-xs font-extrabold uppercase px-2.5 py-1 rounded bg-cyan-400 text-black shadow-md tracking-wider">
-                  {selectedUniversity.category} OTM
-                </span>
-                <h2 className="mt-2 text-2xl font-black text-white md:text-3xl drop-shadow-md">
-                  {selectedUniversity.name}
-                </h2>
-              </div>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-6 space-y-6 md:p-8">
-              {/* Detailed parameters */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl text-center">
-                  <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider">Shahar</span>
-                  <span className="block mt-1 text-sm font-semibold text-slate-200">{selectedUniversity.city}</span>
-                </div>
-                <div className="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl text-center">
-                  <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider">Yo'nalish</span>
-                  <span className="block mt-1 text-sm font-semibold truncate text-slate-200" title={selectedUniversity.specialty}>{selectedUniversity.specialty}</span>
-                </div>
-                <div className="bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl text-center">
-                  <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider">Reyting / Status</span>
-                  <span className="block mt-1 text-sm font-semibold truncate text-cyan-400">{selectedUniversity.badge.replace("@ ", "")}</span>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold tracking-wider uppercase text-slate-400">Muassasa haqida</h4>
-                <p className="text-sm leading-relaxed text-slate-300">
-                  {selectedUniversity.description} Ushbu oliy ta'lim muassasasi O'zbekistonda yoshlarga jahon andozalari darajasida bilim berish va kelajak mutaxassislarini tayyorlashda salmoqli hissa qo'shib kelmoqda.
-                </p>
-                <p className="text-sm leading-relaxed text-slate-300">
-                  Talabalar uchun keng imkoniyatlar, zamonaviy laboratoriyalar va xalqaro o'quv dasturlari mavjud.
-                </p>
-              </div>
-
-              {/* Call to action */}
-              <div className="flex gap-4 pt-4 border-t border-slate-800/60">
-                <button 
-                  onClick={() => setSelectedUniversity(null)}
-                  className="flex-1 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-sm font-bold transition-all border border-slate-800 cursor-pointer"
-                >
-                  Yopish
-                </button>
-                <button 
-                  onClick={() => alert(`${selectedUniversity.name}-ga hujjat topshirish simulyatsiyasi muvaffaqiyatli ishga tushdi!`)}
-                  className="flex-1 py-3.5 bg-[#00f5ff] hover:bg-cyan-400 text-black rounded-xl text-sm font-extrabold tracking-wide transition-all shadow-[0_0_20px_rgba(0,245,255,0.25)] hover:shadow-[0_0_25px_rgba(0,245,255,0.4)] cursor-pointer"
-                >
-                  Hujjat topshirish
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <UniversityDetail
+          university={selectedUniversity}
+          onClose={() => setSelectedUniversity(null)}
+        />
       )}
     </section>
-  );
+
+    {/* SectionFooter */}
+    <footer className="w-full border-t border-slate-900 bg-[#080d1a] py-8 mt-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex flex-col items-center md:items-start text-center md:text-left">
+          <h2 className="text-xl font-bold text-white tracking-wide">EduUZ</h2>
+          <p className="text-xs text-slate-500 mt-1">© 2024 EduUZ. O'zbekiston kelajagini yuksalatiramiz.</p>
+        </div>
+        
+        <ul className="flex flex-wrap justify-center gap-6 text-sm text-slate-400 font-medium">
+          <li><a href="#" className="hover:text-white transition-colors">Biz haqimizda</a></li>
+          <li><a href="#" className="hover:text-white transition-colors">Aloqa</a></li>
+          <li><a href="#" className="hover:text-white transition-colors">Maxfiylik siyosati</a></li>
+          <li><a href="#" className="hover:text-white transition-colors">Foydalanish shartlari</a></li>
+        </ul>
+
+        <div className="flex gap-3">
+          <button className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0f172a] border border-slate-800 hover:border-slate-600 transition-colors cursor-pointer" aria-label="Web sayt">
+            <GlobeIcon />
+          </button>
+          <button className="flex items-center justify-center w-10 h-10 rounded-full bg-[#0f172a] border border-slate-800 hover:border-slate-600 transition-colors cursor-pointer" aria-label="Ulashish">
+            <ShareIcon />
+          </button>
+        </div>
+      </div>
+    </footer>
+  </div>
+);
 }

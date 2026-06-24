@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { askGemini } from "../../ai/geminiService";
+import { findBestAnswer } from "../../ai/chatEngine";
 
 const GRANTS = [
   {
@@ -131,24 +133,16 @@ function AIModal({ grant, onClose }) {
     setLoading(true);
     setResult("");
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: prompt,
-          }],
-          system: `Siz EduUZ platformasining AI yordamchisisiz. O'zbekistondagi ta'lim grantlari bo'yicha maslahat berasiz. Faqat o'zbek tilida javob bering. Qisqa, aniq va foydali ma'lumot bering.`,
-        }),
-      });
-      const data = await response.json();
-      const text = data.content?.map(b => b.text || "").join("") || "Xatolik yuz berdi.";
-      setResult(text);
+      const { answer, usingFallback } = await askGemini(prompt);
+      if (usingFallback || !answer) {
+        const { answer: fallback } = findBestAnswer(prompt);
+        setResult(fallback || "Xatolik yuz berdi.");
+      } else {
+        setResult(answer);
+      }
     } catch {
-      setResult("Xatolik: AI bilan aloqa o'rnatib bo'lmadi.");
+      const { answer: fallback } = findBestAnswer(prompt);
+      setResult(fallback || "Xatolik yuz berdi.");
     }
     setLoading(false);
   }
@@ -241,19 +235,15 @@ function NewsletterAI() {
   async function subscribe() {
     if (!email.includes("@")) { setMsg("To'g'ri email kiriting."); return; }
     setLoading(true);
+    const prompt = `${email} emailiga obuna bo'lish tasdiqlandi. Qisqa, iliq xush kelibsiz xabari yoz.`;
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: `${email} emailiga obuna bo'lish tasdiqlandi. Qisqa, iliq xush kelibsiz xabari yoz.` }],
-          system: "EduUZ ta'lim platformasi nomidan o'zbek tilida qisqa (2 jumla) xush kelibsiz xabari yoz.",
-        }),
-      });
-      const data = await response.json();
-      setMsg(data.content?.[0]?.text || "Obuna bo'ldingiz! 🎉");
+      const { answer, usingFallback } = await askGemini(prompt);
+      if (usingFallback || !answer) {
+        const { answer: fallback } = findBestAnswer(prompt);
+        setMsg(fallback || "Obuna bo'ldingiz! Tez orada yangiliklar kelib turadi. 🎉");
+      } else {
+        setMsg(answer);
+      }
       setEmail("");
     } catch {
       setMsg("Obuna bo'ldingiz! Tez orada yangiliklar kelib turadi. 🎉");

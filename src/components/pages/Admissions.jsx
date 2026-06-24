@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { askGemini } from "../../ai/geminiService";
+import { findBestAnswer } from "../../ai/chatEngine";
 
 const STEPS = [
   { icon: "📋", title: "Ro'yxatdan o'tish", desc: "EduUZ platformasida ro'yxatdan o'ting va shaxsiy kabinetingizni yarating." },
@@ -104,25 +106,25 @@ function AIModal({ question, onClose }) {
     setLoading(true);
     setResult("");
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          system: "Siz EduUZ platformasining AI yordamchisisiz. O'zbekistondagi universitetlarga qabul jarayoni, hujjatlar va grantlar haqida maslahat berasiz. Faqat o'zbek tilida, aniq va qisqa javob bering.",
-          messages: [{ role: "user", content: prompt }],
-        }),
-      });
-      const data = await res.json();
-      setResult(data.content?.map(b => b.text || "").join("") || "Xatolik yuz berdi.");
+      const { answer, usingFallback } = await askGemini(prompt);
+      if (usingFallback || !answer) {
+        const { answer: fallback } = findBestAnswer(prompt);
+        setResult(fallback || "Xatolik yuz berdi.");
+      } else {
+        setResult(answer);
+      }
     } catch {
-      setResult("Xatolik: AI bilan aloqa bo'lmadi.");
+      const { answer: fallback } = findBestAnswer(prompt);
+      setResult(fallback || "Xatolik yuz berdi.");
     }
     setLoading(false);
   }
 
-  useState(() => { if (question) ask(question); }, []);
+  useEffect(() => {
+    if (question) {
+      ask(question);
+    }
+  }, [question]);
 
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "#000000bb", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>

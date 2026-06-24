@@ -9,7 +9,7 @@ import ChatWidget from "./components/ChatWidget";
 
 export default function App() {
   return (
-    <div className="container mx-auto bg-[#0c1528]">
+    <div className="min-h-screen bg-[#0c1528]">
       <Navbar />
       <main>
         <Routes>

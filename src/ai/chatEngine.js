@@ -99,7 +99,7 @@ export function findBestAnswer(query) {
 
   if (isOffTopic(query)) {
     return {
-      answer: "I am EduUZ AI and can only assist with university and education-related questions.",
+      answer: "Kechirasiz, men hozircha faqat O'zbekiston universitetlari, grantlar, yo'nalishlar va qabul jarayoni haqidagi savollarga javob bera olaman. Keng qamrovli sun'iy intellekt (Gemini) javoblarini faollashtirish uchun loyihaning '.env' fayliga o'z VITE_GEMINI_API_KEY kalitingizni kiriting.",
       confidence: 0,
       intent,
     };
@@ -115,7 +115,7 @@ export function findBestAnswer(query) {
 
   if (scored.length === 0 || scored[0].score < 0.3) {
     return {
-      answer: "I am EduUZ AI and can only assist with university and education-related questions.",
+      answer: "Kechirasiz, ushbu savolga javob topa olmadim. Men faqat O'zbekiston universitetlari, grantlar va qabul haqida ma'lumot bera olaman. Har qanday savolga javob beradigan Gemini modelini ulash uchun '.env' faylida API kalitni sozlang.",
       confidence: 0,
       intent,
     };
