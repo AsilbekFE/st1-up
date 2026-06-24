@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { askGemini } from "../../../ai/geminiService";
+import { findBestAnswer } from "../../../ai/chatEngine";
 
 const YONALISHLAR = [
   {
@@ -164,20 +166,16 @@ function AIModal({ item, onClose }) {
     setLoading(true);
     setResult("");
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          system: "Siz EduUZ platformasining AI yordamchisisiz. O'zbekistondagi ta'lim yo'nalishlari, grantlar va universitetlar haqida maslahat berasiz. Faqat o'zbek tilida, qisqa va aniq javob bering.",
-          messages: [{ role: "user", content: prompt }],
-        }),
-      });
-      const data = await res.json();
-      setResult(data.content?.map(b => b.text || "").join("") || "Xatolik yuz berdi.");
+      const { answer, usingFallback } = await askGemini(prompt);
+      if (usingFallback || !answer) {
+        const { answer: fallback } = findBestAnswer(prompt);
+        setResult(fallback || "Xatolik yuz berdi.");
+      } else {
+        setResult(answer);
+      }
     } catch {
-      setResult("Xatolik: AI bilan aloqa o'rnatib bo'lmadi.");
+      const { answer: fallback } = findBestAnswer(prompt);
+      setResult(fallback || "Xatolik yuz berdi.");
     }
     setLoading(false);
   }
@@ -292,24 +290,18 @@ function TestModal({ onClose }) {
   async function getResult() {
     setLoading(true);
     const summary = Object.entries(answers).map(([i, a]) => `${questions[i].q}: ${a}`).join("; ");
+    const prompt = `Quyidagi javoblar asosida eng mos 2-3 ta ta'lim yo'nalishini tavsiya qil va qisqa tushuntir:\n${summary}`;
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          system: "Siz EduUZ ta'lim platformasining yo'nalish tavsiya qiluvchi AI siz. Faqat o'zbek tilida javob bering. Qisqa va aniq bo'ling.",
-          messages: [{
-            role: "user",
-            content: `Quyidagi javoblar asosida eng mos 2-3 ta ta'lim yo'nalishini tavsiya qil va qisqa tushuntir:\n${summary}`,
-          }],
-        }),
-      });
-      const data = await res.json();
-      setResult(data.content?.map(b => b.text || "").join("") || "Xatolik.");
+      const { answer, usingFallback } = await askGemini(prompt);
+      if (usingFallback || !answer) {
+        const { answer: fallback } = findBestAnswer(prompt);
+        setResult(fallback || "Xatolik yuz berdi.");
+      } else {
+        setResult(answer);
+      }
     } catch {
-      setResult("Xatolik yuz berdi.");
+      const { answer: fallback } = findBestAnswer(prompt);
+      setResult(fallback || "Xatolik yuz berdi.");
     }
     setLoading(false);
   }
