@@ -10,6 +10,7 @@
     "rankLabel": "@ IT bo'yicha #1",
     "specialty": "IT va Texnologiya",
     "city": "Toshkent",
+    "initial": "I",
     "isFeatured": true
   },
   {
@@ -23,6 +24,7 @@
     "rankLabel": "@ Biznes bo'yicha #1",
     "specialty": "Biznes",
     "city": "Toshkent",
+    "initial": "W",
     "isFeatured": true
   },
   {
@@ -36,6 +38,7 @@
     "rankLabel": "@ Innovatsiya",
     "specialty": "IT va Texnologiya",
     "city": "Toshkent",
+    "initial": "A",
     "isFeatured": true
   },
   {
