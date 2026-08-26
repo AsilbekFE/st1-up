@@ -46,7 +46,9 @@ const ShareIcon = () => (
   </svg>
 );
 
-// 8 ta tasodifiy joylashgan qizil nur blob'lari (har sahifa yuklanishida yangilanadi)
+// 8 ta tasodifiy joylashgan gradient nur blob'lari
+const COLORS = ["#8b5cf6", "#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#06b6d4", "#ec4899", "#f97316"];
+
 const GLOW_BLOBS = Array.from({ length: 8 }, (_, i) => ({
   id: i,
   top: Math.random() * 90,
@@ -54,6 +56,7 @@ const GLOW_BLOBS = Array.from({ length: 8 }, (_, i) => ({
   size: 180 + Math.round(Math.random() * 320),
   duration: 4 + Math.random() * 5,
   delay: -Math.random() * 9,
+  colorIndex: i % COLORS.length,
 }));
 
 export default function SectionUniversity() {
@@ -70,6 +73,21 @@ export default function SectionUniversity() {
   // Interactive details modal
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [viewsCount, setViewsCount] = useState({});
+
+  // Random color state for glow blobs
+  const [blobColors, setBlobColors] = useState(() =>
+    GLOW_BLOBS.map(b => COLORS[b.colorIndex])
+  );
+
+  // Randomly change blob colors every 3 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBlobColors(prev =>
+        prev.map(() => COLORS[Math.floor(Math.random() * COLORS.length)])
+      );
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Apply dynamic page-level theme wrapper
@@ -239,8 +257,8 @@ export default function SectionUniversity() {
 
       {/* Main Grid Content */}
       <section id="filters-section" className="py-12 bg-black px-4 md:px-8 max-w-7xl mx-auto rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden my-6 w-full">
-      {/* 8 ta tasodifiy gradient nur blob'lari — violet → blue → red → green */}
-      {GLOW_BLOBS.map((b) => (
+      {/* 8 ta tasodifiy gradient nur blob'lari — ranglari tasodifiy o'zgaradi */}
+      {GLOW_BLOBS.map((b, i) => (
         <div
           key={b.id}
           className="glow-blob absolute rounded-full blur-3xl pointer-events-none"
@@ -249,9 +267,10 @@ export default function SectionUniversity() {
             left: `${b.left}%`,
             width: b.size,
             height: b.size,
-            background: `linear-gradient(135deg, #8b5cf6, #3b82f6, #ef4444, #22c55e)`,
-            backgroundSize: "300% 300%",
-            animation: `gradient-shift ${b.duration}s ease infinite, glow-pulse ${b.duration}s ease-in-out infinite`,
+            background: blobColors[i],
+            opacity: 0.3,
+            transition: "background 1.5s ease",
+            animation: `glow-pulse ${b.duration}s ease-in-out infinite`,
             animationDelay: `${b.delay}s`,
             "--gd": `${b.duration}s`,
             "--gdd": `${b.delay}s`,
@@ -394,21 +413,12 @@ export default function SectionUniversity() {
                   <div
                     key={uni.id}
                     onClick={() => handleUniversityClick(uni)}
-                    className="group relative bg-white/5 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col justify-between h-full cursor-pointer hover:translate-y-[-4px]"
+                    className="group relative backdrop-blur-md rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col justify-between h-full cursor-pointer hover:translate-y-[-4px]"
                     style={{
-                      border: "2px solid transparent",
-                      backgroundClip: "padding-box",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      background: "rgba(255,255,255,0.03)",
                     }}
                   >
-                    {/* Gradient border animation - violet → blue → red → green */}
-                    <div
-                      className="absolute inset-[-2px] rounded-2xl -z-10 animate-gradient-shift"
-                      style={{
-                        background: "linear-gradient(135deg, #8b5cf6, #3b82f6, #ef4444, #22c55e, #8b5cf6)",
-                        backgroundSize: "300% 300%",
-                        animation: "gradient-shift 4s ease infinite",
-                      }}
-                    />
                     <div>
                       {/* Image section with premium hover effect and badge overlay */}
                       <div className="relative w-full overflow-hidden h-24 md:h-44">
@@ -418,7 +428,7 @@ export default function SectionUniversity() {
                           className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
                         />
                         {/* Shaffof parda — hoverda yo'qoladi */}
-                        <div className="absolute inset-0 bg-gray-500/70 transition-opacity duration-500 group-hover:opacity-0 pointer-events-none" />
+                        <div className="absolute inset-0 bg-gray-500/30 transition-opacity duration-500 group-hover:opacity-0 pointer-events-none" />
                         <span className={`absolute top-1.5 left-1.5 md:top-3 md:left-3 text-[8px] md:text-[10px] font-extrabold uppercase px-1.5 py-0.5 md:px-2.5 md:py-1 rounded shadow-md tracking-wider ${uni.badgeStyle}`}>
                           {uni.badge}
                         </span>
