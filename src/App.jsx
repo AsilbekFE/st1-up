@@ -5,11 +5,12 @@ import SectionUniversity from "./components/SectionUniversity";
 import Majors from "./components/pages/Majors/Majors";
 import Scholarships from "./components/pages/Scholarships";
 import Admissions from "./components/pages/Admissions";
+import Statistics from "./components/pages/Statistics";
 import ChatWidget from "./components/ChatWidget";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#0c1528]">
+    <div className="min-h-screen bg-[#1a120b] pt-16">
       <Navbar />
       <main>
         <Routes>
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/majors" element={<Majors />} />
           <Route path="/scholarships" element={<Scholarships />} />
           <Route path="/admissions" element={<Admissions />} />
+          <Route path="/statistics" element={<Statistics />} />
         </Routes>
       </main>
       <ChatWidget />

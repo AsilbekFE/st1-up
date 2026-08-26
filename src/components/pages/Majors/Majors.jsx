@@ -1,6 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { askGemini } from "../../../ai/geminiService";
 import { findBestAnswer } from "../../../ai/chatEngine";
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 767px)").matches : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const onChange = e => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isMobile;
+}
 
 const YONALISHLAR = [
   {
@@ -95,6 +108,9 @@ const YONALISHLAR = [
 
 function YonalishCard({ item, onDetails }) {
   const [hovered, setHovered] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const isMobile = useIsMobile();
+  const showFull = !isMobile || expanded;
   return (
     <div
       onMouseEnter={() => setHovered(true)}
@@ -128,19 +144,44 @@ function YonalishCard({ item, onDetails }) {
         fontSize: 20, marginBottom: 12,
       }}>{item.icon}</div>
       <h3 style={{ color: "#fff", fontSize: 15, fontWeight: 700, margin: "0 0 6px" }}>{item.title}</h3>
-      <p style={{ color: "#64748b", fontSize: 12, lineHeight: 1.6, margin: "0 0 14px" }}>{item.desc}</p>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, fontSize: 11 }}>
-        <div>
-          <div style={{ color: "#64748b" }}>O'RTACHA MAOSH</div>
-          <div style={{ color: item.accent, fontWeight: 800, fontSize: 14 }}>{item.stipendiya}</div>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ color: "#64748b" }}>UNIVERSITETLAR</div>
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>{item.universitetlar} ta</div>
-        </div>
-      </div>
+
+      {showFull && (
+        <>
+          <p style={{ color: "#64748b", fontSize: 12, lineHeight: 1.6, margin: "0 0 14px" }}>{item.desc}</p>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, fontSize: 11 }}>
+            <div>
+              <div style={{ color: "#64748b" }}>O'RTACHA MAOSH</div>
+              <div style={{ color: item.accent, fontWeight: 800, fontSize: 14 }}>{item.stipendiya}</div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ color: "#64748b" }}>UNIVERSITETLAR</div>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>{item.universitetlar} ta</div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* AI button - faqat mobilda ochilgan holatda */}
+      {isMobile && expanded && (
+        <button
+          onClick={() => onDetails(item)}
+          style={{
+            background: "transparent",
+            border: `1px solid ${item.accent}`,
+            color: item.accent,
+            borderRadius: 8, padding: "6px 16px",
+            fontSize: 12, fontWeight: 600, cursor: "pointer",
+            transition: "background 0.2s",
+            width: "100%", marginBottom: 8,
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = item.accent + "22"}
+          onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+        >🤖 AI maslahat olish</button>
+      )}
+
+      {/* Asosiy tugma: desktopda AI modal, mobilda ochish/yopish */}
       <button
-        onClick={() => onDetails(item)}
+        onClick={() => isMobile ? setExpanded(e => !e) : onDetails(item)}
         style={{
           background: "transparent",
           border: `1px solid ${item.accent}`,
@@ -152,7 +193,7 @@ function YonalishCard({ item, onDetails }) {
         }}
         onMouseEnter={e => e.currentTarget.style.background = item.accent + "22"}
         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-      >Batafsil →</button>
+      >{isMobile && expanded ? "Yopish ↑" : "Batafsil →"}</button>
     </div>
   );
 }
@@ -398,41 +439,26 @@ export default function EduUZYonalishlar() {
         </p>
 
         {/* Search */}
-        <div style={{
-          maxWidth: 600, margin: "0 auto",
-          background: "#111827",
-          border: "1px solid #1e293b",
-          borderRadius: 12, padding: "10px 16px",
-          display: "flex", gap: 10, alignItems: "center",
-        }}>
-          <span style={{ color: "#475569", fontSize: 15 }}>🔍</span>
+        <div className="max-w-[600px] mx-auto bg-[#111827] border border-[#1e293b] rounded-xl px-4 py-2.5 flex gap-2.5 items-center">
+          <span className="text-[#475569] text-[15px]">🔍</span>
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Yo'nalish qidiring..."
-            style={{
-              flex: 1, background: "none", border: "none",
-              color: "#fff", fontSize: 13, outline: "none",
-            }}
+            className="flex-1 bg-transparent border-none text-white text-[13px] outline-none"
           />
-          {["Bakalavr", "IT", "Biznes", "Tibbiyot"].map(f => (
-            <button key={f} onClick={() => setSearch(f)} style={{
-              background: "#1a2340", border: "1px solid #334155",
-              color: "#94a3b8", borderRadius: 20, padding: "4px 12px",
-              fontSize: 11, cursor: "pointer", whiteSpace: "nowrap",
-            }}>{f}</button>
-          ))}
+          {/* Tavsiya tugmalari - faqat desktopda */}
+          <div className="hidden md:flex gap-1.5">
+            {["Bakalavr", "IT", "Biznes", "Tibbiyot"].map(f => (
+              <button key={f} onClick={() => setSearch(f)} className="bg-[#1a2340] border border-[#334155] text-[#94a3b8] rounded-full px-3 py-1 text-[11px] cursor-pointer whitespace-nowrap">{f}</button>
+            ))}
+          </div>
         </div>
       </header>
 
-      <main style={{ maxWidth: 860, margin: "0 auto", padding: "0 16px 40px" }}>
-        {/* Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-          gap: 14,
-          marginBottom: 36,
-        }}>
+      <main className="max-w-[860px] mx-auto px-4 pb-10">
+        {/* Grid - mobilda 2 ustun, desktopda auto-fill */}
+        <div className="grid grid-cols-2 gap-3.5 mb-9 md:grid-cols-[repeat(auto-fill,minmax(190px,1fr))]">
           {filtered.map(item => (
             <YonalishCard key={item.id} item={item} onDetails={setModal} />
           ))}

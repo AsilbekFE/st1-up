@@ -27,11 +27,22 @@ export default {
           "0%": { transform: "translateX(100%)" },
           "100%": { transform: "translateX(0)" },
         },
+        "glow-pulse": {
+          "0%, 100%": { opacity: "0.04" },
+          "50%": { opacity: "0.32" },
+        },
+        "gradient-shift": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.2s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
         "slide-in-right": "slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
+        "glow-pulse": "glow-pulse 6s ease-in-out infinite",
+        "gradient-shift": "gradient-shift 4s ease infinite",
       },
     },
   },

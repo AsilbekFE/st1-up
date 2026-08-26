@@ -21,14 +21,8 @@ const EyeIcon = () => (
   </svg>
 );
 
-const CloseIcon = () => (
-  <svg className="w-6 h-6 transition-colors text-slate-400 hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-
 const PlayIcon = () => (
-  <svg className="w-5 h-5 mr-2 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+  <svg className="w-5 h-5 mr-2 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
     <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
@@ -52,16 +46,26 @@ const ShareIcon = () => (
   </svg>
 );
 
+// 8 ta tasodifiy joylashgan qizil nur blob'lari (har sahifa yuklanishida yangilanadi)
+const GLOW_BLOBS = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  top: Math.random() * 90,
+  left: Math.random() * 95,
+  size: 180 + Math.round(Math.random() * 320),
+  duration: 4 + Math.random() * 5,
+  delay: -Math.random() * 9,
+}));
+
 export default function SectionUniversity() {
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Filter states
+  const [error, setError] = useState(null);  // Filter states
   const [activeCategory, setActiveCategory] = useState(null); // 'Davlat', 'Xususiy', 'Xalqaro'
   const [activeCity, setActiveCity] = useState("Barcha shaharlar");
   const [activeSpecialty, setActiveSpecialty] = useState(null); // String
   const [searchQuery, setSearchQuery] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(null);
 
   // Interactive details modal
   const [selectedUniversity, setSelectedUniversity] = useState(null);
@@ -71,7 +75,7 @@ export default function SectionUniversity() {
     // Apply dynamic page-level theme wrapper
     const originalBg = document.body.style.backgroundColor;
     const originalColor = document.body.style.color;
-    document.body.style.backgroundColor = "#080d1a";
+    document.body.style.backgroundColor = "#262626";
     document.body.style.color = "#ffffff";
     
     // Fetch mock API data
@@ -175,35 +179,35 @@ export default function SectionUniversity() {
   const cities = ["Barcha shaharlar", ...new Set(universities.map((u) => u.city))];
 
   return (
-    <div className="min-h-screen bg-[#0c1528] text-white flex flex-col justify-between">
+    <div className="min-h-screen bg-[#261E17] text-white flex flex-col justify-between">
       {/* SectionMain (Hero) */}
-      <header className="relative flex flex-col items-center justify-center px-4 py-20 text-center max-w-5xl mx-auto w-full">
+      <header className="relative flex flex-col items-center justify-center px-4 pt-12 pb-12 md:py-20 text-center max-w-5xl mx-auto w-full overflow-hidden bg-[#261E17]">
         <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-cyan-900/10 rounded-full blur-[150px] pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-violet-900/10 rounded-full blur-[150px] pointer-events-none" />
         
-        <h1 className="relative text-5xl md:text-6xl font-black tracking-tight text-white leading-none">
+        <h1 className="relative text-2xl sm:text-4xl md:text-6xl font-black tracking-tight text-white leading-tight md:leading-none">
           O'zbekistondagi <br />
           orzungizdagi <br />
-          <span className="block mt-2 text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-400 bg-clip-text">
+          <span className="block mt-1 md:mt-2 text-cyan-400">
             universitetni toping
           </span>
         </h1>
         
-        <p className="relative max-w-3xl mt-6 text-base md:text-lg text-slate-400 leading-relaxed">
+        <p className="relative max-w-3xl mt-4 md:mt-6 text-xs sm:text-sm md:text-lg text-slate-400 leading-relaxed">
           Zamonaviy vositalar, interaktiv xaritalar va real vaqtdagi milliy reytinglar bilan
           yuqori darajadagi ta'limni o'rganing. Kelajagingiz to'g'ri tanlovdan boshlanadi.
         </p>
         
-        <div className="relative flex gap-4 mt-8">
+        <div className="relative flex flex-col sm:flex-row gap-2 sm:gap-4 mt-6 md:mt-8 w-full sm:w-auto max-w-md sm:max-w-none">
           <button
             onClick={() => document.getElementById("filters-section")?.scrollIntoView({ behavior: "smooth" })}
-            className="px-8 py-3.5 font-bold text-black transition-all bg-gradient-to-r from-cyan-400 to-violet-400 rounded-xl hover:opacity-90 shadow-[0_0_30px_rgba(0,245,255,0.3)] hover:scale-105 cursor-pointer"
+            className="px-4 py-2.5 text-xs md:px-8 md:py-3.5 md:text-base font-bold text-black transition-all bg-cyan-400 border border-transparent rounded-xl hover:bg-transparent hover:border-white hover:text-white cursor-pointer"
           >
             Izlashni boshlash
           </button>
           <button
             onClick={() => alert("Bu qanday ishlaydi: EduUZ orqali universitetlarni qidirish, solishtirish va ariza topshirish juda oson!")}
-            className="flex items-center px-6 py-3.5 font-bold transition-all bg-[#11192e]/80 border border-slate-800/80 rounded-xl text-slate-300 hover:border-slate-700 hover:text-white cursor-pointer"
+            className="flex items-center justify-center px-4 py-2.5 text-xs md:px-6 md:py-3.5 md:text-base font-bold transition-all bg-cyan-400 border border-transparent rounded-xl text-black hover:bg-transparent hover:border-white hover:text-white cursor-pointer"
           >
             <PlayIcon />
             Bu qanday ishlaydi
@@ -225,7 +229,7 @@ export default function SectionUniversity() {
             />
             <button
               onClick={() => document.getElementById("filters-section")?.scrollIntoView({ behavior: "smooth" })}
-              className="px-6 py-2.5 font-bold text-black bg-cyan-400 rounded-xl hover:bg-cyan-300 transition-colors text-sm shadow-[0_0_15px_rgba(34,211,238,0.3)] cursor-pointer"
+              className="hidden md:block px-6 py-2.5 font-bold text-black bg-cyan-400 rounded-xl hover:bg-cyan-300 transition-colors text-sm cursor-pointer"
             >
               Qidiruv
             </button>
@@ -234,28 +238,72 @@ export default function SectionUniversity() {
       </header>
 
       {/* Main Grid Content */}
-      <section id="filters-section" className="py-12 bg-[#080d1a] px-4 md:px-8 max-w-7xl mx-auto rounded-3xl border border-slate-900/60 shadow-2xl relative overflow-hidden my-6 w-full">
+      <section id="filters-section" className="py-12 bg-black px-4 md:px-8 max-w-7xl mx-auto rounded-3xl border border-slate-800/60 shadow-2xl relative overflow-hidden my-6 w-full">
+      {/* 8 ta tasodifiy gradient nur blob'lari — violet → blue → red → green */}
+      {GLOW_BLOBS.map((b) => (
+        <div
+          key={b.id}
+          className="glow-blob absolute rounded-full blur-3xl pointer-events-none"
+          style={{
+            top: `${b.top}%`,
+            left: `${b.left}%`,
+            width: b.size,
+            height: b.size,
+            background: `linear-gradient(135deg, #8b5cf6, #3b82f6, #ef4444, #22c55e)`,
+            backgroundSize: "300% 300%",
+            animation: `gradient-shift ${b.duration}s ease infinite, glow-pulse ${b.duration}s ease-in-out infinite`,
+            animationDelay: `${b.delay}s`,
+            "--gd": `${b.duration}s`,
+            "--gdd": `${b.delay}s`,
+          }}
+        />
+      ))}
+
       {/* Background radial highlight glow */}
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-900/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         {/* Sticky Filters Sidebar */}
-        <aside className="lg:col-span-1 lg:sticky lg:top-8 self-start bg-[#0f172a]/90 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-xl transition-all duration-300 hover:border-slate-700/60">
-          <div className="flex items-center justify-between pb-5 mb-5 border-b border-slate-800/80">
-            <h3 className="flex items-center text-lg font-bold tracking-wide text-slate-100">
+        <aside className="lg:col-span-1 lg:sticky lg:top-8 self-start bg-white/5 backdrop-blur-md border border-white/15 rounded-2xl p-6 shadow-xl transition-all duration-300 hover:border-white/30">
+          <button
+            onClick={() => setFiltersOpen((o) => !o)}
+            className="w-full flex items-center justify-between pb-4 border-b border-slate-800/80 cursor-pointer group"
+            aria-expanded={filtersOpen}
+          >
+            <h3 className={`flex items-center text-sm md:text-lg font-bold tracking-wide transition-colors ${filtersOpen ? "text-cyan-400" : "text-slate-100 group-hover:text-white"}`}>
               <SlidersIcon />
               Filtrlar
+              {(activeCategory || activeCity !== "Barcha shaharlar" || activeSpecialty) && (
+                <span className="ml-2 flex items-center justify-center w-5 h-5 text-[10px] font-bold rounded-full bg-cyan-400 text-black">
+                  {[activeCategory, activeCity !== "Barcha shaharlar", activeSpecialty].filter(Boolean).length}
+                </span>
+              )}
             </h3>
-            {(activeCategory || activeCity !== "Barcha shaharlar" || activeSpecialty) && (
-              <button 
-                onClick={clearFilters}
-                className="text-xs font-medium transition-colors cursor-pointer text-rose-400 hover:text-rose-300"
-              >
-                Tozalash
-              </button>
+            <svg
+              className={`w-4 h-4 shrink-0 text-slate-400 transition-transform duration-300 ${filtersOpen ? "rotate-180" : ""}`}
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {/* Collapsible filter body */}
+          <div
+            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              filtersOpen ? "max-h-[800px] opacity-100 mt-5" : "max-h-0 opacity-0"
+            }`}
+          >
+            {filtersOpen && (activeCategory || activeCity !== "Barcha shaharlar" || activeSpecialty) && (
+              <div className="flex justify-end mb-4">
+                <button
+                  onClick={clearFilters}
+                  className="text-xs font-medium transition-colors cursor-pointer text-rose-400 hover:text-rose-300"
+                >
+                  Tozalash
+                </button>
+              </div>
             )}
-          </div>
 
           {/* Kategoriya */}
           <div className="mb-6">
@@ -273,7 +321,7 @@ export default function SectionUniversity() {
                     onClick={() => setActiveCategory(isActive ? null : cat.name)}
                     className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center cursor-pointer ${
                       isActive
-                        ? "bg-[#00f5ff] text-black shadow-[0_0_20px_rgba(0,245,255,0.35)] scale-[1.02]"
+                        ? "bg-[#00f5ff] text-black scale-[1.02]"
                         : "bg-slate-900/60 text-slate-300 hover:bg-slate-800/50 hover:text-white"
                     }`}
                   >
@@ -318,7 +366,7 @@ export default function SectionUniversity() {
                     onClick={() => setActiveSpecialty(isActive ? null : spec)}
                     className={`text-xs font-semibold px-3 py-2 rounded-lg transition-all duration-300 cursor-pointer border ${
                       isActive
-                        ? "bg-cyan-500/25 border-cyan-400 text-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.25)]"
+                        ? "bg-cyan-500/25 border-cyan-400 text-cyan-300"
                         : "bg-slate-900/40 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
                     }`}
                   >
@@ -328,6 +376,7 @@ export default function SectionUniversity() {
               })}
             </div>
           </div>
+          </div>
 
         </aside>
 
@@ -336,48 +385,73 @@ export default function SectionUniversity() {
           {/* Featured universities */}
           {featuredUnis.length > 0 && (
             <div>
-              <h2 className="flex items-center gap-2 mb-6 text-2xl font-bold tracking-tight text-white">
-                <span className="w-8 h-1 rounded-full bg-gradient-to-r from-cyan-400 to-violet-500"></span>
+              <h2 className="flex items-center gap-2 mb-3 md:mb-6 text-sm md:text-2xl font-bold tracking-tight text-white">
+                <span className="w-5 md:w-8 h-0.5 md:h-1 rounded-full bg-cyan-400"></span>
                 Saralangan universitetlar
               </h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-6">
                 {featuredUnis.map((uni) => (
                   <div
                     key={uni.id}
                     onClick={() => handleUniversityClick(uni)}
-                    className="group bg-[#11192e] border border-slate-800/80 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:border-slate-700/60 flex flex-col justify-between h-full cursor-pointer hover:translate-y-[-4px]"
+                    className="group relative bg-white/5 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col justify-between h-full cursor-pointer hover:translate-y-[-4px]"
+                    style={{
+                      border: "2px solid transparent",
+                      backgroundClip: "padding-box",
+                    }}
                   >
+                    {/* Gradient border animation - violet → blue → red → green */}
+                    <div
+                      className="absolute inset-[-2px] rounded-2xl -z-10 animate-gradient-shift"
+                      style={{
+                        background: "linear-gradient(135deg, #8b5cf6, #3b82f6, #ef4444, #22c55e, #8b5cf6)",
+                        backgroundSize: "300% 300%",
+                        animation: "gradient-shift 4s ease infinite",
+                      }}
+                    />
                     <div>
                       {/* Image section with premium hover effect and badge overlay */}
-                      <div className="relative w-full overflow-hidden h-44">
+                      <div className="relative w-full overflow-hidden h-24 md:h-44">
                         <img
                           src={uni.image}
                           alt={uni.name}
                           className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#11192e] via-transparent to-transparent opacity-80" />
-                        <span className={`absolute top-3 left-3 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded shadow-md tracking-wider ${uni.badgeStyle}`}>
+                        {/* Shaffof parda — hoverda yo'qoladi */}
+                        <div className="absolute inset-0 bg-gray-500/70 transition-opacity duration-500 group-hover:opacity-0 pointer-events-none" />
+                        <span className={`absolute top-1.5 left-1.5 md:top-3 md:left-3 text-[8px] md:text-[10px] font-extrabold uppercase px-1.5 py-0.5 md:px-2.5 md:py-1 rounded shadow-md tracking-wider ${uni.badgeStyle}`}>
                           {uni.badge}
                         </span>
                       </div>
 
                       {/* Content */}
-                      <div className="p-5">
-                        <h3 className="text-lg font-bold transition-colors duration-300 text-slate-100 group-hover:text-cyan-400">
+                      <div className="p-2 md:p-5">
+                        <h3 className="text-[11px] md:text-lg font-bold leading-tight transition-colors duration-300 text-slate-100 group-hover:text-cyan-400 line-clamp-2">
                           {uni.name}
                         </h3>
-                        <p className="mt-2 text-sm font-normal leading-relaxed text-slate-400 line-clamp-3">
+                        {descExpanded === uni.id && (
+                          <p className="md:hidden mt-1.5 text-[10px] leading-relaxed text-slate-400">
+                            {uni.description}
+                          </p>
+                        )}
+                        <p className={`hidden md:block mt-2 text-sm font-normal leading-relaxed text-slate-400 ${descExpanded === uni.id ? "" : "line-clamp-3"}`}>
                           {uni.description}
                         </p>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDescExpanded(descExpanded === uni.id ? null : uni.id); }}
+                          className="mt-1 text-[10px] md:text-xs font-semibold cursor-pointer text-sky-400 hover:text-sky-300 transition-colors"
+                        >
+                          {descExpanded === uni.id ? "yopish ↑" : "more ↓"}
+                        </button>
                       </div>
                     </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between px-5 pt-3 pb-5 text-xs font-semibold border-t border-slate-800/40 text-slate-300">
-                      <span className="px-2 py-1 border rounded text-cyan-400 bg-cyan-950/40 border-cyan-800/30">
+                    <div className="flex items-center justify-between px-2 pt-1 pb-2 md:px-5 md:pt-3 md:pb-5 text-[9px] md:text-xs font-semibold border-t border-slate-800/40 text-slate-300">
+                      <span className="truncate px-1 py-0.5 md:px-2 border rounded text-sky-300 bg-sky-500/15 border-sky-400/30 max-w-full">
                         {uni.rankLabel}
                       </span>
-                      <span className="flex items-center gap-1 transition-all duration-300 text-slate-400 group-hover:text-white group-hover:translate-x-1">
+                      <span className="hidden sm:flex items-center gap-1 transition-all duration-300 text-slate-400 group-hover:text-white group-hover:translate-x-1 shrink-0 ml-1">
                         Batafsil ko'rish
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -393,21 +467,21 @@ export default function SectionUniversity() {
           {/* Regular universities list */}
           <div>
             <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-800/60">
-              <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-white">
-                <span className="w-6 h-1 rounded-full bg-gradient-to-r from-violet-500 to-cyan-400"></span>
+              <h2 className="flex items-center gap-2 text-sm md:text-xl font-bold tracking-tight text-white">
+                <span className="w-5 md:w-6 h-0.5 md:h-1 rounded-full bg-cyan-400"></span>
                 Ko'proq ma'lumot
               </h2>
-              <span className="px-3 py-1 font-mono text-xs font-medium border rounded-full text-slate-500 bg-slate-900 border-slate-800">
-                {filteredUniversities.length} ta universitet ko'rsatilmoqda
+              <span className="px-2 py-0.5 md:px-3 md:py-1 font-mono text-[9px] md:text-xs font-medium border rounded-full text-slate-500 bg-slate-900 border-slate-800 whitespace-nowrap">
+                {filteredUniversities.length} ta universitet
               </span>
             </div>
 
             {filteredUniversities.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 bg-[#11192e]/40 border border-slate-800/60 rounded-2xl text-center">
+              <div className="flex flex-col items-center justify-center py-16 bg-white/5 backdrop-blur-md border border-white/15 rounded-2xl text-center">
                 <svg className="w-12 h-12 mb-3 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                <p className="font-medium text-slate-400">Bunday shartlarga mos universitet topilmadi</p>
+                <p className="text-xs md:text-sm font-medium text-slate-400">Bunday shartlarga mos universitet topilmadi</p>
                 <button
                   onClick={clearFilters}
                   className="mt-3 text-xs font-bold underline cursor-pointer text-cyan-400 hover:text-cyan-300"
@@ -416,41 +490,52 @@ export default function SectionUniversity() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="grid grid-cols-4 gap-2 md:gap-6">
                 {regularUnis.map((uni) => (
                   <div
                     key={uni.id}
                     onClick={() => handleUniversityClick(uni)}
-                    className="group bg-[#11192e]/60 border border-slate-900 rounded-2xl p-5 relative shadow-md hover:shadow-xl transition-all duration-300 hover:border-slate-800 hover:translate-y-[-2px] flex flex-col justify-between cursor-pointer"
+                    className="group bg-white/5 backdrop-blur-md border border-white/15 rounded-lg md:rounded-2xl p-2 md:p-5 relative shadow-md hover:shadow-xl transition-all duration-300 hover:border-white/30 hover:translate-y-[-2px] flex flex-col justify-between cursor-pointer"
                   >
                     <div>
                       {/* Card Header */}
                       <div className="flex items-start justify-between">
-                        <div className="flex items-center justify-center w-10 h-10 text-lg font-black border shadow-sm rounded-xl bg-cyan-950/60 border-cyan-800/40 text-cyan-400">
+                        <div className="flex items-center justify-center w-6 h-6 md:w-10 md:h-10 text-[11px] md:text-lg font-black border shadow-sm rounded-md md:rounded-xl bg-cyan-950/60 border-cyan-800/40 text-cyan-400 shrink-0">
                           {uni.initial}
                         </div>
-                        <span className="text-[9px] font-extrabold tracking-wider border border-slate-800 px-2 py-0.5 rounded text-slate-400 bg-slate-900/60 uppercase">
+                        <span className="hidden md:block text-[9px] font-extrabold tracking-wider border border-slate-800 px-2 py-0.5 rounded text-slate-400 bg-slate-900/60 uppercase">
                           {uni.category}
                         </span>
                       </div>
 
                       {/* Card Body */}
-                      <div className="mt-4">
-                        <h3 className="text-base font-bold transition-colors duration-300 text-slate-100 group-hover:text-cyan-400">
+                      <div className="mt-2 md:mt-4">
+                        <h3 className="text-[9px] md:text-base font-bold leading-tight transition-colors duration-300 text-slate-100 group-hover:text-cyan-400 line-clamp-3">
                           {uni.name}
                         </h3>
-                        <p className="mt-2 text-xs leading-relaxed text-slate-400 line-clamp-3">
+                        {descExpanded === uni.id && (
+                          <p className="md:hidden mt-1.5 text-[9px] leading-relaxed text-slate-400">
+                            {uni.description}
+                          </p>
+                        )}
+                        <p className={`hidden md:block mt-2 text-xs leading-relaxed text-slate-400 ${descExpanded === uni.id ? "" : "line-clamp-3"}`}>
                           {uni.description}
                         </p>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDescExpanded(descExpanded === uni.id ? null : uni.id); }}
+                          className="mt-1 text-[10px] md:text-xs font-semibold cursor-pointer text-sky-400 hover:text-sky-300 transition-colors"
+                        >
+                          {descExpanded === uni.id ? "yopish ↑" : "more ↓"}
+                        </button>
                       </div>
                     </div>
 
                     {/* Card Footer */}
-                    <div className="mt-5 pt-3 border-t border-slate-800/40 flex items-center justify-between text-[11px] font-semibold">
-                      <span className="text-emerald-400 bg-emerald-950/20 px-2 py-0.5 rounded">
+                    <div className="mt-2 pt-1.5 md:mt-5 md:pt-3 border-t border-slate-800/40 flex items-center justify-between text-[8px] md:text-[11px] font-semibold">
+                      <span className="truncate text-sky-300 bg-sky-500/15 px-1 py-0.5 md:px-2 rounded max-w-full">
                         {uni.badge}
                       </span>
-                      <div className="flex items-center gap-1.5 text-slate-500 font-mono">
+                      <div className="hidden sm:flex items-center gap-1.5 text-slate-500 font-mono shrink-0 ml-1.5">
                         <EyeIcon />
                         <span>{viewsCount[uni.id] || 0}</span>
                       </div>
@@ -472,11 +557,11 @@ export default function SectionUniversity() {
     </section>
 
     {/* SectionFooter */}
-    <footer className="w-full border-t border-slate-900 bg-[#080d1a] py-8 mt-12">
+    <footer className="w-full border-t border-slate-700/60 bg-neutral-800 py-8 mt-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
-          <h2 className="text-xl font-bold text-white tracking-wide">EduUZ</h2>
-          <p className="text-xs text-slate-500 mt-1">© 2024 EduUZ. O'zbekiston kelajagini yuksalatiramiz.</p>
+          <h2 className="text-base md:text-xl font-bold text-white tracking-wide">EduUZ</h2>
+          <p className="text-[10px] md:text-xs text-slate-500 mt-1">© 2024 EduUZ. O'zbekiston kelajagini yuksalatiramiz.</p>
         </div>
         
         <ul className="flex flex-wrap justify-center gap-6 text-sm text-slate-400 font-medium">

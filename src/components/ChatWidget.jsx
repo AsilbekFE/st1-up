@@ -11,7 +11,13 @@ const suggestions = [
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {
+      id: "welcome",
+      text: "Salom! 👋 EduUZ AI yordamchisiga xush kelibsiz! Men O'zbekiston universitetlari, yo'nalishlar, stipendiyalar, qabul jarayoni, to'lovlar va talaba hayoti haqida savollaringizga javob beraman.",
+      role: "bot",
+    },
+  ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const listRef = useRef(null);
@@ -19,12 +25,6 @@ export default function ChatWidget() {
 
   const addMessage = useCallback((text, role) =>
     setMessages((prev) => [...prev, { id: Date.now() + Math.random(), text, role }]), []);
-
-  useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      addMessage("Salom! 👋 EduUZ AI yordamchisiga xush kelibsiz! Men O'zbekiston universitetlari, yo'nalishlar, stipendiyalar, qabul jarayoni, to'lovlar va talaba hayoti haqida savollaringizga javob beraman.", "bot");
-    }
-  }, [isOpen, messages.length, addMessage]);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -60,13 +60,9 @@ export default function ChatWidget() {
 
   return (
     <>
-      {isOpen && (
-        <div className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden" onClick={() => setIsOpen(false)} />
-      )}
-
-      <div className={`fixed bottom-6 right-6 z-50 flex flex-col transition-all duration-300 ${isOpen ? "w-[92vw] sm:w-[380px] h-[560px]" : "w-auto h-auto"}`}>
+      <div className={isOpen ? "fixed inset-0 z-50 flex flex-col" : "fixed bottom-6 right-6 z-50"}>
         {isOpen ? (
-          <div className="flex flex-col flex-1 bg-[#0f172a] border border-slate-800/80 rounded-2xl shadow-2xl shadow-slate-900/50 overflow-hidden animate-scale-in">
+          <div className="flex flex-col w-full h-full bg-[#0f172a] overflow-hidden animate-fade-in">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/80 bg-[#11192e]">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-800/30">
@@ -90,49 +86,51 @@ export default function ChatWidget() {
               </button>
             </div>
 
-            <div ref={listRef} className="flex-1 p-4 space-y-3 overflow-y-auto scroll-smooth chat-scroll">
-              {messages.length === 1 && (
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {suggestions.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => handleSend(s)}
-                      className="px-3 py-2 text-[11px] font-medium text-left transition-all border rounded-xl text-slate-300 border-slate-800/80 bg-slate-900/40 hover:bg-slate-800/40 hover:border-slate-700"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div
-                    className={`max-w-[85%] px-4 py-2.5 text-sm leading-relaxed whitespace-pre-line ${
-                      msg.role === "user"
-                        ? "bg-gradient-to-r from-cyan-500 to-violet-500 text-white rounded-2xl rounded-br-md"
-                        : "bg-slate-900/60 border border-slate-800/60 text-slate-200 rounded-2xl rounded-bl-md"
-                    }`}
-                  >
-                    {msg.text}
+            <div ref={listRef} className="flex-1 overflow-y-auto scroll-smooth chat-scroll">
+              <div className="max-w-3xl mx-auto w-full p-4 space-y-3">
+                {messages.length === 1 && (
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {suggestions.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => handleSend(s)}
+                        className="px-3 py-2 text-[11px] font-medium text-left transition-all border rounded-xl text-slate-300 border-slate-800/80 bg-slate-900/40 hover:bg-slate-800/40 hover:border-slate-700"
+                      >
+                        {s}
+                      </button>
+                    ))}
                   </div>
-                </div>
-              ))}
+                )}
 
-              {isTyping && (
-                <div className="flex justify-start">
-                  <div className="px-4 py-3 text-sm bg-slate-900/60 border border-slate-800/60 rounded-2xl rounded-bl-md">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                {messages.map((msg) => (
+                  <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                    <div
+                      className={`max-w-[85%] px-4 py-2.5 text-sm leading-relaxed whitespace-pre-line ${
+                        msg.role === "user"
+                          ? "bg-gradient-to-r from-cyan-500 to-violet-500 text-white rounded-2xl rounded-br-md"
+                          : "bg-slate-900/60 border border-slate-800/60 text-slate-200 rounded-2xl rounded-bl-md"
+                      }`}
+                    >
+                      {msg.text}
                     </div>
                   </div>
-                </div>
-              )}
+                ))}
+
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="px-4 py-3 text-sm bg-slate-900/60 border border-slate-800/60 rounded-2xl rounded-bl-md">
+                      <div className="flex gap-1">
+                        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="p-3 border-t border-slate-800/80">
+            <div className="p-3 border-t border-slate-800/80 max-w-3xl mx-auto w-full">
               <form
                 onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                 className="flex gap-2"

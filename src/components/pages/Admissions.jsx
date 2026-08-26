@@ -98,7 +98,7 @@ function FAQItem({ faq, isOpen, onToggle, onAsk }) {
 
 function AIModal({ question, onClose }) {
   const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(Boolean(question));
   const [input, setInput] = useState(question || "");
 
   async function ask(prompt) {
@@ -121,9 +121,27 @@ function AIModal({ question, onClose }) {
   }
 
   useEffect(() => {
-    if (question) {
-      ask(question);
-    }
+    if (!question) return undefined;
+    let active = true;
+    (async () => {
+      try {
+        const { answer, usingFallback } = await askGemini(question);
+        if (!active) return;
+        if (usingFallback || !answer) {
+          const { answer: fallback } = findBestAnswer(question);
+          setResult(fallback || "Xatolik yuz berdi.");
+        } else {
+          setResult(answer);
+        }
+      } catch {
+        if (!active) return;
+        const { answer: fallback } = findBestAnswer(question);
+        setResult(fallback || "Xatolik yuz berdi.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => { active = false; };
   }, [question]);
 
   return (
@@ -170,6 +188,7 @@ export default function EduUZQabul() {
   const [faqSearch, setFaqSearch] = useState("");
   const [aiQ, setAiQ] = useState(null);
   const [aiOpen, setAiOpen] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
 
   const docFilters = ["Barchasi", "Majburiy", "Sertifikatlar", "Rasmiy"];
   const docCategories = { "Barchasi": DOCS, "Majburiy": DOCS.slice(0, 2), "Sertifikatlar": [DOCS[3]], "Rasmiy": [DOCS[0], DOCS[1]] };
@@ -221,71 +240,77 @@ export default function EduUZQabul() {
             <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>Qabul bosqichlari</h2>
             <span style={{ color: "#64748b", fontSize: 12 }}>4 ta oson qadam orqali universitetga kiring.</span>
           </div>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div className="grid grid-cols-2 gap-3 md:flex md:gap-3">
             {STEPS.map((s, i) => <StepCard key={i} step={s} index={i} />)}
           </div>
         </section>
 
-        {/* Docs + Portals */}
-        <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 40 }}>
-          {/* Docs */}
-          <div style={{ border: "1px solid #1e293b", borderRadius: 16, padding: 20 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 800, margin: "0 0 14px" }}>Kerakli hujjatlar ro'yxati</h3>
+        {/* Docs (collapsible on mobile) + Portals */}
+        <section className="grid grid-cols-2 gap-5 mb-10 items-start">
+          {/* Docs - collapsible card (mobile only) */}
+          <div className="col-span-2 md:col-span-1 border border-[#1e293b] rounded-2xl p-5">
+            {/* Mobile toggle */}
+            <button
+              onClick={() => setDocsOpen(o => !o)}
+              className="w-full flex justify-between items-center cursor-pointer md:hidden"
+            >
+              <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0, color: docsOpen ? "#a78bfa" : "#fff" }}>Kerakli hujjatlar ro'yxati</h3>
+              <span style={{ color: "#6366f1", fontSize: 18, transition: "transform 0.2s", transform: docsOpen ? "rotate(180deg)" : "none" }}>⌄</span>
+            </button>
 
-            {/* Search */}
-            <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 8, padding: "7px 12px", display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-              <span style={{ color: "#475569" }}>🔍</span>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Hujjat qidirish..." style={{ flex: 1, background: "none", border: "none", color: "#fff", fontSize: 12, outline: "none" }} />
-            </div>
+            {/* Desktop heading (always visible) */}
+            <h3 className="hidden md:block" style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>Kerakli hujjatlar ro'yxati</h3>
 
-            {/* Filter tabs */}
-            <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
-              {docFilters.map(f => (
-                <button key={f} onClick={() => setDocFilter(f)} style={{
-                  background: docFilter === f ? "#6366f122" : "transparent",
-                  border: `1px solid ${docFilter === f ? "#6366f1" : "#334155"}`,
-                  color: docFilter === f ? "#a78bfa" : "#64748b",
-                  borderRadius: 20, padding: "3px 10px", fontSize: 11, cursor: "pointer",
-                }}>{f}</button>
-              ))}
-            </div>
+            <div className={`${docsOpen ? "block" : "hidden"} md:block`}>
+              {/* Search */}
+              <div className="bg-[#111827] border border-[#1e293b] rounded-lg px-3 py-[7px] flex items-center gap-2 mt-3.5 md:mt-3.5 mb-2.5">
+                <span className="text-[#475569]">🔍</span>
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Hujjat qidirish..." className="flex-1 bg-transparent border-none text-white text-xs outline-none" />
+              </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {filteredDocs.length === 0 && <p style={{ color: "#475569", fontSize: 13 }}>Hujjat topilmadi.</p>}
-              {filteredDocs.map((d, i) => (
-                <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: "#1a2340", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{d.icon}</div>
-                  <div>
-                    <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{d.title}</div>
-                    <div style={{ color: "#64748b", fontSize: 11, lineHeight: 1.5 }}>{d.desc}</div>
+              {/* Filter tabs */}
+              <div className="flex gap-1.5 mb-3.5 flex-wrap">
+                {docFilters.map(f => (
+                  <button key={f} onClick={() => setDocFilter(f)} className={`rounded-full px-2.5 py-[3px] text-[11px] cursor-pointer ${docFilter === f ? "bg-[#6366f122] border border-[#6366f1] text-[#a78bfa]" : "bg-transparent border border-[#334155] text-[#64748b]"}`}>{f}</button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 gap-2.5">
+                {filteredDocs.length === 0 && <p className="text-[#475569] text-[13px]">Hujjat topilmadi.</p>}
+                {filteredDocs.map((d, i) => (
+                  <div key={i} className="flex gap-2.5 items-start">
+                    <div className="w-8 h-8 rounded-lg bg-[#1a2340] flex items-center justify-center text-base shrink-0">{d.icon}</div>
+                    <div>
+                      <div className="text-white text-[13px] font-semibold">{d.title}</div>
+                      <div className="text-[#64748b] text-[11px] leading-normal">{d.desc}</div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Portals */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* Portals + News: mobile = 2 per row & full-width news; desktop = stacked right column */}
+          <div className="contents md:flex md:flex-col md:gap-3.5">
             {PORTALS.map((p, i) => (
-              <div key={i} style={{ border: "1px solid #1e293b", borderRadius: 14, padding: "18px 16px", display: "flex", gap: 12, alignItems: "flex-start" }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: "#1a2340", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{p.icon}</div>
-                <div>
-                  <div style={{ color: "#fff", fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{p.title}</div>
-                  <div style={{ color: "#64748b", fontSize: 12, lineHeight: 1.5, marginBottom: 8 }}>{p.desc}</div>
-                  <a href={`https://${p.link}`} target="_blank" rel="noreferrer" style={{ color: "#6366f1", fontSize: 11, textDecoration: "none" }}>🔗 {p.link}</a>
+              <div key={i} className="h-full border border-[#1e293b] rounded-xl px-4 py-[18px] flex flex-col md:flex-row gap-3 items-center md:items-start text-center md:text-left">
+                <div className="w-10 h-10 rounded-[10px] bg-[#1a2340] flex items-center justify-center text-xl shrink-0">{p.icon}</div>
+                <div className="flex flex-col items-center md:items-start">
+                  <div className="text-white text-sm font-bold mb-1">{p.title}</div>
+                  <p className="hidden md:block text-[#64748b] text-xs leading-normal mb-2">{p.desc}</p>
+                  <a href={`https://${p.link}`} target="_blank" rel="noreferrer" className="text-[#6366f1] text-[11px] no-underline">🔗 {p.link}</a>
                 </div>
               </div>
             ))}
 
-            {/* News */}
+            {/* News - full width on mobile, normal on desktop */}
             {NEWS.map((n, i) => (
-              <div key={i} style={{ border: "1px solid #1e293b", borderRadius: 14, overflow: "hidden", position: "relative" }}>
-                <div style={{ background: "linear-gradient(135deg,#1a2340,#0f172a)", padding: "16px" }}>
-                  <span style={{ background: "#00e5a022", color: "#00e5a0", border: "1px solid #00e5a055", borderRadius: 20, padding: "2px 10px", fontSize: 10, fontWeight: 700 }}>{n.badge}</span>
-                  <h4 style={{ color: "#fff", fontSize: 13, fontWeight: 700, margin: "8px 0 4px", lineHeight: 1.4 }}>{n.title}</h4>
-                  <span style={{ color: "#475569", fontSize: 11 }}>{n.date}</span>
-                  <br />
-                  <button onClick={() => openAI(n.title)} style={{ marginTop: 8, background: "transparent", border: "1px solid #6366f155", color: "#a78bfa", borderRadius: 6, padding: "4px 12px", fontSize: 11, cursor: "pointer" }}>Batafsil →</button>
+              <div key={i} className="col-span-2 border border-[#1e293b] rounded-xl overflow-hidden relative">
+                <div className="bg-gradient-to-br from-[#1a2340] to-[#0f172a] p-4">
+                  <span className="bg-[#00e5a022] text-[#00e5a0] border border-[#00e5a055] rounded-full px-2.5 py-[2px] text-[10px] font-bold">{n.badge}</span>
+                  <h4 className="text-white text-[13px] font-bold mt-2 mb-1 leading-snug">{n.title}</h4>
+                  <span className="text-[#475569] text-[11px]">{n.date}</span>
+                  <button onClick={() => openAI(n.title)} className="block w-full md:w-auto md:inline-block mt-2 bg-transparent border border-[#6366f155] text-[#a78bfa] rounded-md px-3 py-1.5 text-[11px] cursor-pointer text-center">Batafsil →</button>
                 </div>
               </div>
             ))}

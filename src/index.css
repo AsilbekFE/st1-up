@@ -3,7 +3,27 @@
 @tailwind utilities;
 
 body {
-  @apply bg-[#0c1528] text-white;
+  @apply bg-[#1a120b] text-white;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Qizil nur blob'lari — biri yonib biri o'chadi */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.04;
+  }
+  50% {
+    opacity: 0.32;
+  }
+}
+
+.glow-blob {
+  animation: glow-pulse var(--gd, 6s) ease-in-out var(--gdd, 0s) infinite;
 }
 
 .chat-scroll::-webkit-scrollbar {
@@ -29,7 +49,7 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-  background: #0c1528;
+  background: #1a120b;
 }
 
 *::-webkit-scrollbar-thumb {
@@ -39,5 +59,36 @@ body {
 
 *::-webkit-scrollbar-thumb:hover {
   background: #334155;
+}
+
+.gradient-before-after {
+  position: relative;
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6, #ef4444, #22c55e);
+  background-size: 300% 300%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.gradient-before-after::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(225deg, #8b5cf6, #3b82f6, #ef4444, #22c55e);
+  background-size: 300% 300%;
+  animation: gradient-shift 4s ease infinite reverse;
+  opacity: 0.5;
+  z-index: -1;
+  filter: blur(20px);
+}
+
+.gradient-before-after::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+  z-index: 1;
 }
 
