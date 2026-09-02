@@ -47,7 +47,6 @@ ADMISSION STEPS: Yo'nalishni tanlang -> Universitetni toping -> Hujjatlarni tayy
 Required docs: Pasport, shahodatnoma, 6x 3x4 photo, tibbiy ma'lumotnoma (086), til sertifikati`;
 
 let genAI = null;
-let chatSession = null;
 let usingFallback = false;
 
 function getGenAI() {

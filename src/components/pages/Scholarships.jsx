@@ -288,7 +288,15 @@ export default function EduUZ() {
   const [consultModal, setConsultModal] = useState(false);
   const [activeFilter, setActiveFilter] = useState("Barcha grantlar");
 
-  const filters = ["Bakalavr", "Magistratura", "Doktorantura", "Xorijiy"];
+  const filters = ["Barcha grantlar", "Bakalavr", "Magistratura", "Xorijiy", "Davlat", "Xususiy"];
+  const visibleGrants = activeFilter === "Barcha grantlar"
+    ? GRANTS
+    : GRANTS.filter((grant) => {
+      const searchableText = [grant.badge, grant.title, grant.desc, ...grant.tags, ...grant.links]
+        .join(" ")
+        .toLowerCase();
+      return searchableText.includes(activeFilter.toLowerCase());
+    });
 
   return (
     <div style={{
@@ -338,10 +346,12 @@ export default function EduUZ() {
         }}>
           <input placeholder="🔍 Grant turi..." style={{ flex: 1, minWidth: 100, background: "#1a2340", border: "1px solid #334155", borderRadius: 8, padding: "8px 12px", color: "#fff", fontSize: 13, outline: "none" }} />
           <input placeholder="📍 Davlat..." style={{ flex: 1, minWidth: 100, background: "#1a2340", border: "1px solid #334155", borderRadius: 8, padding: "8px 12px", color: "#fff", fontSize: 13, outline: "none" }} />
-          <select style={{ flex: 1, minWidth: 100, background: "#1a2340", border: "1px solid #334155", borderRadius: 8, padding: "8px 12px", color: "#94a3b8", fontSize: 13, outline: "none" }}>
-            <option>Barcha grantlar</option>
-            <option>Bakalavr</option>
-            <option>Magistratura</option>
+          <select
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value)}
+            style={{ flex: 1, minWidth: 100, background: "#1a2340", border: "1px solid #334155", borderRadius: 8, padding: "8px 12px", color: "#94a3b8", fontSize: 13, outline: "none" }}
+          >
+            {filters.map((filter) => <option key={filter}>{filter}</option>)}
           </select>
           <button style={{
             background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
@@ -351,7 +361,7 @@ export default function EduUZ() {
         </div>
 
         <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginTop: 14 }}>
-          {["Bakalavr", "Magistratura", "Xorijiy", "Davlat", "Xususiy"].map(f => (
+          {filters.map(f => (
             <button key={f} onClick={() => setActiveFilter(f)} style={{
               background: activeFilter === f ? "#6366f122" : "transparent",
               border: `1px solid ${activeFilter === f ? "#6366f1" : "#334155"}`,
@@ -372,11 +382,24 @@ export default function EduUZ() {
             <h2 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 4px" }}>Top Grantlar</h2>
             <p style={{ color: "#64748b", fontSize: 13, margin: 0 }}>Hozirgi vaqtda taqdim etilayotgan eng yaxshi grantlar</p>
           </div>
-          <span style={{ color: "#6366f1", fontSize: 13, fontWeight: 600 }}>Jami: 45 ta grant</span>
+          <span style={{ color: "#6366f1", fontSize: 13, fontWeight: 600 }}>Jami: {visibleGrants.length} ta grant</span>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16, marginBottom: 24 }}>
-          {GRANTS.slice(0, 5).map(g => <GrantCard key={g.id} grant={g} onDetails={setModal} />)}
+          {visibleGrants.map(g => <GrantCard key={g.id} grant={g} onDetails={setModal} />)}
+          {visibleGrants.length === 0 && (
+            <div style={{
+              gridColumn: "1 / -1",
+              background: "#111827",
+              border: "1px solid #334155",
+              borderRadius: 16,
+              padding: 24,
+              textAlign: "center",
+              color: "#94a3b8",
+            }}>
+              Bu filter bo'yicha grant topilmadi. Boshqa filter tanlab ko'ring.
+            </div>
+          )}
 
           {/* AI Consult Card */}
           <div style={{

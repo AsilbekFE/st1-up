@@ -18,26 +18,21 @@ export default function SignInModal({ isOpen, onClose }) {
   const firstInputRef = useRef(null);
   const submitInFlight = useRef(false);
 
-  const resetForm = useCallback(() => {
-    setForm(initialForm);
-    setErrors(initialErrors);
-    setSubmitError("");
-    setIsSuccess(false);
-    setIsSubmitting(false);
-    setShowPassword(false);
-    submitInFlight.current = false;
-  }, []);
-
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      resetForm();
-      setTimeout(() => firstInputRef.current?.focus(), 100);
-    } else {
+    if (!isOpen) {
       document.body.style.overflow = "";
+      return undefined;
     }
-    return () => { document.body.style.overflow = ""; };
-  }, [isOpen, resetForm]);
+
+    document.body.style.overflow = "hidden";
+    submitInFlight.current = false;
+    const focusTimer = setTimeout(() => firstInputRef.current?.focus(), 100);
+
+    return () => {
+      clearTimeout(focusTimer);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
