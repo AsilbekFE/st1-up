@@ -56,7 +56,6 @@ function useAnimatedCounter(target, duration = 2000) {
   const [value, setValue] = useState(0);
   const ref = useRef(null);
   useEffect(() => {
-    let start = 0;
     const startTime = Date.now();
     function animate() {
       const elapsed = Date.now() - startTime;
