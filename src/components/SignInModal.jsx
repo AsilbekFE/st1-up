@@ -116,15 +116,38 @@ export default function SignInModal({ isOpen, onClose }) {
 
     setIsSubmitting(true);
     submitInFlight.current = true;
+    setSubmitError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const endpoint = isSignUp ? "/api/auth/register" : "/api/auth/login";
+      const payload = isSignUp
+        ? { name: form.name, email: form.email, password: form.password }
+        : { email: form.email, password: form.password };
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Xatolik yuz berdi");
+      }
+
+      if (data.data?.token) {
+        localStorage.setItem("eduuz_token", data.data.token);
+        localStorage.setItem("eduuz_user", JSON.stringify(data.data.user));
+        window.dispatchEvent(new Event("eduuz_auth_changed"));
+      }
+
       setIsSuccess(true);
       setTimeout(() => {
         onClose();
       }, 800);
-    } catch {
-      setSubmitError("Tizimda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
+    } catch (err) {
+      setSubmitError(err.message || "Tizimda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
     } finally {
       setIsSubmitting(false);
       submitInFlight.current = false;

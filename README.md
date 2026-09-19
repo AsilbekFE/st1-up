@@ -86,7 +86,11 @@ npm run dev
 
 | Buyruq | Vazifasi |
 |--------|----------|
-| `npm run dev` | Development serverni ishga tushirish |
+| `npm run dev` | Frontend Vite development serverni ishga tushirish (Port: 5173) |
+| `npm run server` | Backend Express API serverni ishga tushirish (Port: 5000) |
+| `npm run server:dev` | Backend serverni avtomatik qayta yuklanish (watch) bilan ishga tushirish |
+| `npm run server:seed` | SQLite ma'lumotlar bazasini boshlang'ich ma'lumotlar bilan to'ldirish |
+| `npm run server:studio` | Prisma Studio vizual ma'lumotlar bazasi boshqaruv panelini ochish |
 | `npm run build` | Production build yaratish |
 | `npm run preview` | Build ni preview qilish |
 | `npm run lint` | ESLint orqali kodni tekshirish |

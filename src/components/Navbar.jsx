@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import SignInModal from "./SignInModal";
 
@@ -20,6 +20,38 @@ const linkClass = ({ isActive }) =>
 export default function Navbar() {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const checkUser = () => {
+    try {
+      const stored = localStorage.getItem("eduuz_user");
+      if (stored) {
+        setCurrentUser(JSON.parse(stored));
+      } else {
+        setCurrentUser(null);
+      }
+    } catch {
+      setCurrentUser(null);
+    }
+  };
+
+  useEffect(() => {
+    checkUser();
+    const handler = () => checkUser();
+    window.addEventListener("eduuz_auth_changed", handler);
+    window.addEventListener("storage", handler);
+    return () => {
+      window.removeEventListener("eduuz_auth_changed", handler);
+      window.removeEventListener("storage", handler);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("eduuz_token");
+    localStorage.removeItem("eduuz_user");
+    setCurrentUser(null);
+    window.dispatchEvent(new Event("eduuz_auth_changed"));
+  };
 
   return (
     <>
@@ -45,12 +77,29 @@ export default function Navbar() {
 
             {/* Right side */}
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsSignInOpen(true)}
-                className="hidden md:block bg-[#ad8eff] px-5 py-2 rounded-full text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
-              >
-                Sign In
-              </button>
+              {currentUser ? (
+                <div className="hidden md:flex items-center gap-3">
+                  <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/20">
+                    <div className="w-7 h-7 rounded-full bg-[#ad8eff] text-black font-bold flex items-center justify-center text-xs">
+                      {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "U"}
+                    </div>
+                    <span className="text-sm font-medium text-white max-w-[120px] truncate">{currentUser.name}</span>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-500/20 text-red-300 border border-red-500/40 px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer hover:bg-red-500/30 transition-all"
+                  >
+                    Chiqish
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsSignInOpen(true)}
+                  className="hidden md:block bg-[#ad8eff] px-5 py-2 rounded-full text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+                >
+                  Sign In
+                </button>
+              )}
 
               {/* Hamburger */}
               <button
@@ -132,12 +181,32 @@ export default function Navbar() {
               </li>
             ))}
             <li className="pt-4">
-              <button
-                onClick={() => { setIsSignInOpen(true); setMenuOpen(false); }}
-                className="w-full bg-[#ad8eff] py-2.5 rounded-full text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
-              >
-                Sign In
-              </button>
+              {currentUser ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <div className="w-8 h-8 rounded-full bg-[#ad8eff] text-black font-bold flex items-center justify-center text-sm">
+                      {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "U"}
+                    </div>
+                    <div className="truncate">
+                      <p className="text-sm font-semibold text-white">{currentUser.name}</p>
+                      <p className="text-xs text-slate-400 truncate">{currentUser.email}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { handleLogout(); setMenuOpen(false); }}
+                    className="w-full bg-red-500/20 text-red-300 border border-red-500/40 py-2.5 rounded-full text-sm font-semibold cursor-pointer hover:bg-red-500/30 transition-opacity"
+                  >
+                    Chiqish
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => { setIsSignInOpen(true); setMenuOpen(false); }}
+                  className="w-full bg-[#ad8eff] py-2.5 rounded-full text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+                >
+                  Sign In
+                </button>
+              )}
             </li>
           </ul>
         </aside>

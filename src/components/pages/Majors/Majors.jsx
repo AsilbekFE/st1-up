@@ -417,12 +417,24 @@ function TestModal({ onClose }) {
 }
 
 export default function EduUZYonalishlar() {
+  const [majorsList, setMajorsList] = useState(YONALISHLAR);
   const [modal, setModal] = useState(null);
   const [testOpen, setTestOpen] = useState(false);
   const [consultOpen, setConsultOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  const filtered = YONALISHLAR.filter(y =>
+  useEffect(() => {
+    fetch("/api/majors")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          setMajorsList(resData.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const filtered = majorsList.filter(y =>
     y.title.toLowerCase().includes(search.toLowerCase()) ||
     y.desc.toLowerCase().includes(search.toLowerCase())
   );

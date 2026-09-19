@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  name         String
+  role         String        @default("USER") // USER, ADMIN
+  avatar       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
+  bookmarks    Bookmark[]
+}
+
+model University {
+  id             Int             @id @default(autoincrement())
+  name           String
+  category       String          // Davlat, Xalqaro, Xususiy
+  badge          String?
+  badgeStyle     String?
+  image          String?
+  description    String
+  rankLabel      String?
+  specialty      String
+  city           String
+  initial        String?
+  isFeatured     Boolean         @default(false)
+  views          Int             @default(0)
+  phone          String?
+  email          String?
+  address        String?
+  founded        String?
+  students       String?
+  website        String?
+  legacy         String?
+  programs       Program[]
+  campusFeatures CampusFeature[]
+  applications   Application[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Program {
+  id           Int        @id @default(autoincrement())
+  universityId Int
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  icon         String?
+  title        String
+  desc         String
+}
+
+model CampusFeature {
+  id           Int        @id @default(autoincrement())
+  universityId Int
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  icon         String?
+  title        String
+  desc         String
+}
+
+model Major {
+  id             Int     @id @default(autoincrement())
+  icon           String?
+  badge          String?
+  badgeColor     String?
+  title          String
+  desc           String
+  stipendiya     String?
+  universitetlar Int     @default(0)
+  accent         String?
+}
+
+model Scholarship {
+  id         Int     @id @default(autoincrement())
+  badge      String?
+  badgeColor String?
+  title      String
+  desc       String
+  tags       String  // JSON string
+  links      String  // JSON string
+  color      String?
+  accent     String?
+}
+
+model AdmissionStep {
+  id    Int    @id @default(autoincrement())
+  order Int    @default(1)
+  icon  String
+  title String
+  desc  String
+}
+
+model AdmissionDoc {
+  id    Int    @id @default(autoincrement())
+  order Int    @default(1)
+  icon  String
+  title String
+  desc  String
+}
+
+model Faq {
+  id       Int    @id @default(autoincrement())
+  question String
+  answer   String
+  order    Int    @default(1)
+}
+
+model Application {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  universityId Int
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  programName  String?
+  fullName     String
+  phone        String
+  email        String
+  status       String     @default("PENDING") // PENDING, APPROVED, REJECTED
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Bookmark {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetType String   // UNIVERSITY, SCHOLARSHIP
+  targetId   Int
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, targetType, targetId])
+}

@@ -42,17 +42,31 @@ export default function ChatWidget() {
     setIsTyping(true);
 
     try {
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: q }),
+      });
+      const data = await res.json();
+      if (data.success && data.answer) {
+        addMessage(data.answer, "bot");
+      } else {
+        const { answer, usingFallback } = await askGemini(q);
+        if (usingFallback || !answer) {
+          const { answer: fallback } = findBestAnswer(q);
+          addMessage(fallback, "bot");
+        } else {
+          addMessage(answer, "bot");
+        }
+      }
+    } catch {
       const { answer, usingFallback } = await askGemini(q);
-
       if (usingFallback || !answer) {
         const { answer: fallback } = findBestAnswer(q);
         addMessage(fallback, "bot");
       } else {
         addMessage(answer, "bot");
       }
-    } catch {
-      const { answer: fallback } = findBestAnswer(q);
-      addMessage(fallback, "bot");
     }
 
     setIsTyping(false);

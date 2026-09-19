@@ -96,27 +96,39 @@ export default function SectionUniversity() {
     document.body.style.backgroundColor = "#262626";
     document.body.style.color = "#ffffff";
     
-    // Fetch mock API data
-    fetch("/api/universities.json")
+    // Fetch universities from backend API (with fallback)
+    fetch("/api/universities")
       .then((res) => {
-        if (!res.ok) {
-          throw new Error("API-dan ma'lumot yuklab bo'lmadi");
-        }
+        if (!res.ok) throw new Error("API-dan ma'lumot yuklab bo'lmadi");
         return res.json();
       })
-      .then((data) => {
+      .then((resData) => {
+        const data = Array.isArray(resData) ? resData : (resData.data || []);
         setUniversities(data);
-        // Initialize mock views
         const initialViews = {};
         data.forEach((u) => {
-          initialViews[u.id] = Math.floor(Math.random() * 250) + 120;
+          initialViews[u.id] = u.views || 0;
         });
         setViewsCount(initialViews);
         setLoading(false);
       })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
+      .catch(() => {
+        // Fallback to static json if backend not reachable
+        fetch("/api/universities.json")
+          .then((res) => res.json())
+          .then((data) => {
+            setUniversities(data);
+            const initialViews = {};
+            data.forEach((u) => {
+              initialViews[u.id] = Math.floor(Math.random() * 250) + 120;
+            });
+            setViewsCount(initialViews);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setError(err.message);
+            setLoading(false);
+          });
       });
 
     return () => {
@@ -163,11 +175,12 @@ export default function SectionUniversity() {
   };
 
   const handleUniversityClick = (uni) => {
-    // Increment mock view count on click
+    // Increment view count on state and backend
     setViewsCount(prev => ({
       ...prev,
       [uni.id]: (prev[uni.id] || 0) + 1
     }));
+    fetch(`/api/universities/${uni.id}/view`, { method: "POST" }).catch(() => {});
     setSelectedUniversity(uni);
   };
 

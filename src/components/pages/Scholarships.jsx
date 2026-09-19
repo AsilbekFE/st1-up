@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { askGemini } from "../../ai/geminiService";
 import { findBestAnswer } from "../../ai/chatEngine";
 
@@ -284,9 +284,21 @@ function NewsletterAI() {
 }
 
 export default function EduUZ() {
+  const [grants, setGrants] = useState(GRANTS);
   const [modal, setModal] = useState(null);
   const [consultModal, setConsultModal] = useState(false);
   const [activeFilter, setActiveFilter] = useState("Barcha grantlar");
+
+  useEffect(() => {
+    fetch("/api/scholarships")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          setGrants(resData.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const filters = ["Bakalavr", "Magistratura", "Doktorantura", "Xorijiy"];
 
@@ -376,7 +388,7 @@ export default function EduUZ() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16, marginBottom: 24 }}>
-          {GRANTS.slice(0, 5).map(g => <GrantCard key={g.id} grant={g} onDetails={setModal} />)}
+          {grants.map(g => <GrantCard key={g.id} grant={g} onDetails={setModal} />)}
 
           {/* AI Consult Card */}
           <div style={{

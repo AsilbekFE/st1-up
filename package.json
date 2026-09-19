@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node server/index.js",
+    "server:dev": "node --watch server/index.js",
+    "server:seed": "node server/src/seeds/seed.js",
+    "server:studio": "cd server && npx prisma studio",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

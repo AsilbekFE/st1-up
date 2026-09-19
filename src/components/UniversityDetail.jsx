@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 // University detail data - enriched per university id
 const DETAIL_DATA = {
@@ -45,6 +45,24 @@ const DETAIL_DATA = {
 };
 
 function getDetail(uni) {
+  if (uni.phone || uni.programs?.length) {
+    return {
+      phone: uni.phone || "+998 71 000 00 00",
+      email: uni.email || "info@eduuz.uz",
+      address: uni.address || `${uni.city}, O'zbekiston`,
+      founded: uni.founded || "N/A",
+      students: uni.students || "N/A",
+      country: uni.category,
+      website: uni.website || "#",
+      programs: uni.programs && uni.programs.length > 0 ? uni.programs : [
+        { icon: "📘", title: uni.specialty, desc: uni.description }
+      ],
+      campus: uni.campusFeatures && uni.campusFeatures.length > 0 ? uni.campusFeatures : [
+        { icon: "🏛️", title: "Asosiy kampus", desc: "Zamonaviy o'quv binolari va laboratoriyalar mavjud." }
+      ],
+      legacy: uni.legacy || (uni.description + " Ushbu oliy ta'lim muassasasi O'zbekistonda yetakchi mutaxassislar tayyorlashda muhim o'rin tutadi."),
+    };
+  }
   return DETAIL_DATA[uni.id] || {
     phone: "+998 71 000 00 00",
     email: "info@eduuz.uz",
@@ -66,6 +84,33 @@ function getDetail(uni) {
 export default function UniversityDetail({ university, onClose }) {
   const detail = getDetail(university);
 
+  const [isApplyOpen, setIsApplyOpen] = useState(false);
+  const [applyForm, setApplyForm] = useState({
+    fullName: "",
+    phone: "",
+    email: "",
+    programName: detail.programs?.[0]?.title || university.specialty || "",
+    notes: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [applySuccess, setApplySuccess] = useState(false);
+  const [applyError, setApplyError] = useState("");
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("eduuz_user");
+      if (stored) {
+        const u = JSON.parse(stored);
+        setApplyForm((prev) => ({
+          ...prev,
+          fullName: u.name || "",
+          email: u.email || "",
+          programName: detail.programs?.[0]?.title || university.specialty || "",
+        }));
+      }
+    } catch {}
+  }, [detail, university]);
+
   // Lock body scroll while open
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -74,10 +119,68 @@ export default function UniversityDetail({ university, onClose }) {
 
   // Close on Escape
   useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    const handler = (e) => {
+      if (e.key === "Escape") {
+        if (isApplyOpen) {
+          setIsApplyOpen(false);
+        } else {
+          onClose();
+        }
+      }
+    };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  }, [onClose, isApplyOpen]);
+
+  const handleApplySubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("eduuz_token");
+    if (!token) {
+      setApplyError("Ariza topshirish uchun avval tizimga kiring (Sign In).");
+      return;
+    }
+
+    if (!applyForm.fullName || !applyForm.phone || !applyForm.email) {
+      setApplyError("Iltimos, ism, telefon va emailni to'ldiring.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setApplyError("");
+
+    try {
+      const res = await fetch("/api/admissions/apply", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          universityId: university.id,
+          programName: applyForm.programName || university.specialty,
+          fullName: applyForm.fullName,
+          phone: applyForm.phone,
+          email: applyForm.email,
+          notes: applyForm.notes,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Arizani topshirishda xatolik yuz berdi");
+      }
+
+      setApplySuccess(true);
+      setTimeout(() => {
+        setIsApplyOpen(false);
+        setApplySuccess(false);
+      }, 2000);
+    } catch (err) {
+      setApplyError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 w-full h-full bg-[#0c1528] overflow-y-auto flex flex-col justify-between animate-fade-in">
@@ -205,8 +308,11 @@ export default function UniversityDetail({ university, onClose }) {
                 Kelgusi yilga oid diplom va nazariy ismi biriktirilganda barcha zarur talablar yetarlicha qoniqarli jamki birlikda qimmatli qaror amalda ustivorlik bilan qoplanadi.
               </p>
               <div className="flex gap-2 md:gap-3 justify-center items-center">
-                <button className="px-3 py-2 md:px-6 md:py-3 text-[11px] md:text-sm font-bold text-black bg-cyan-400 rounded-lg md:rounded-xl hover:bg-cyan-300 transition cursor-pointer whitespace-nowrap">
-                  Prezentatsiya yuklab olish
+                <button
+                  onClick={() => setIsApplyOpen(true)}
+                  className="px-3 py-2 md:px-6 md:py-3 text-[11px] md:text-sm font-bold text-black bg-cyan-400 rounded-lg md:rounded-xl hover:bg-cyan-300 transition cursor-pointer whitespace-nowrap"
+                >
+                  Onlayn ariza topshirish
                 </button>
                 <button
                   onClick={onClose}
@@ -290,7 +396,7 @@ export default function UniversityDetail({ university, onClose }) {
               </div>
 
               <button
-                onClick={() => alert(`${university.name}ga hujjat topshirish simulyatsiyasi ishga tushdi!`)}
+                onClick={() => setIsApplyOpen(true)}
                 className="w-full py-3.5 mt-3 font-extrabold text-black bg-cyan-400 rounded-xl hover:bg-cyan-300 transition cursor-pointer text-sm"
               >
                 Hujjat topshirish →
@@ -310,6 +416,119 @@ export default function UniversityDetail({ university, onClose }) {
           </div>
         </div>
       </div>
+
+      {/* Online Ariza topshirish Modali */}
+      {isApplyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-lg bg-[#0f172a] border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl text-white">
+            <button
+              onClick={() => setIsApplyOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800"
+            >
+              ✕
+            </button>
+
+            <h3 className="text-xl font-bold mb-1 text-cyan-400">
+              {university.name}ga Ariza Topshirish
+            </h3>
+            <p className="text-xs text-slate-400 mb-6">
+              Ma'lumotlaringizni to'ldiring, universitet qabul komissiyasi arizangizni ko'rib chiqadi.
+            </p>
+
+            {applySuccess ? (
+              <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-center py-8">
+                <p className="text-2xl mb-2">🎉</p>
+                <p className="font-bold text-base">Arizangiz muvaffaqiyatli qabul qilindi!</p>
+                <p className="text-xs mt-1 text-slate-300">Tez orada siz bilan bog'lanamiz.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleApplySubmit} className="space-y-4">
+                {applyError && (
+                  <div className="p-3 text-xs rounded-xl bg-red-500/20 border border-red-500/40 text-red-300">
+                    {applyError}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">To'liq ismingiz</label>
+                  <input
+                    type="text"
+                    required
+                    value={applyForm.fullName}
+                    onChange={(e) => setApplyForm({ ...applyForm, fullName: e.target.value })}
+                    placeholder="Ism Familiya"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Telefon raqam</label>
+                    <input
+                      type="tel"
+                      required
+                      value={applyForm.phone}
+                      onChange={(e) => setApplyForm({ ...applyForm, phone: e.target.value })}
+                      placeholder="+998 90 123 45 67"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Email manzil</label>
+                    <input
+                      type="email"
+                      required
+                      value={applyForm.email}
+                      onChange={(e) => setApplyForm({ ...applyForm, email: e.target.value })}
+                      placeholder="nomi@email.uz"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Tanlangan fakultet / yo'nalish</label>
+                  <input
+                    type="text"
+                    value={applyForm.programName}
+                    onChange={(e) => setApplyForm({ ...applyForm, programName: e.target.value })}
+                    placeholder="Masalan: Dasturiy ta'minot"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Qo'shimcha izoh / DTM bali / Sertifikatlar</label>
+                  <textarea
+                    rows={2}
+                    value={applyForm.notes}
+                    onChange={(e) => setApplyForm({ ...applyForm, notes: e.target.value })}
+                    placeholder="IELTS bali, DTM ballari yoki boshqa savollar..."
+                    className="w-full px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+
+                <div className="pt-2 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsApplyOpen(false)}
+                    className="w-1/2 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-sm font-semibold transition"
+                  >
+                    Bekor qilish
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-1/2 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-bold text-sm transition disabled:opacity-50"
+                  >
+                    {isSubmitting ? "Yuborilmoqda..." : "Yuborish"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
