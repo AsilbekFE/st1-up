@@ -3,98 +3,30 @@ import { askGemini } from "../../ai/geminiService";
 import { findBestAnswer } from "../../ai/chatEngine";
 
 const STEPS = [
-  { icon: "📋", title: "Ro'yxatdan o'tish", desc: "EduUZ platformasida ro'yxatdan o'ting va shaxsiy kabinetingizni yarating." },
-  { icon: "🏛️", title: "Imtihonlar", desc: "DTM yoki universitet test imtihonlarida qatnashing va natijangizni oling." },
-  { icon: "📁", title: "Hujjat topshirish", desc: "Universitetlarning rasmiy saytiga hujjatlaringizni yuklang va tasdiqlang." },
-  { icon: "✅", title: "Qabul", desc: "Qabul natijasi e'lon qilinishi bilan kabinet orqali javob olasiz." },
+  { num: "01", title: "Ro'yxatdan o'tish", desc: "EduUZ gazeta portalida shaxsiy talaba hisobingizni oching." },
+  { num: "02", title: "Imtihonlar & Test", desc: "DTM test markazi yoki universitet ichki imtihonlarida qatnashing." },
+  { num: "03", title: "Hujjat topshirish", desc: "OTM rasmiy portallariga belgilangan muddatda arizangizni yuboring." },
+  { num: "04", title: "Qabul va Tasdiq", desc: "Mandat e'lon qilingach, shartnoma yoki davlat grantiga ega bo'ling." },
 ];
 
 const DOCS = [
-  { icon: "🪪", title: "Pasport (ID karta)", desc: "Fuqarolik pasporti yoki ID kartangizning nusxasi talab etiladi." },
-  { icon: "🎓", title: "Diplom / Attestat", desc: "O'rta maktab yoki kollej diplomingizning tasdiqlangan nusxasi." },
-  { icon: "📸", title: "3x4 Fotosurat", desc: "Yaqinda olingan, oq fonda 3x4 o'lchamdagi rasm." },
-  { icon: "📝", title: "Sertifikatlar", desc: "IELTS, SAT yoki boshqa xalqaro sertifikatlar (ixtiyoriy)." },
+  { icon: "🪪", title: "Pasport yoki ID karta", desc: "O'zbekiston fuqarolik pasporti yoki ID kartasining nusxasi." },
+  { icon: "🎓", title: "Attestat yoki Diplom", desc: "Umumiy o'rta yoki o'rta maxsus ta'lim muassasasini bitirganlik hujjati." },
+  { icon: "📸", title: "3x4 Fotosurat", desc: "Oq fonda, belgilangan standartlar asosida yaqinda olingan rasm." },
+  { icon: "📝", title: "Xalqaro Sertifikatlar", desc: "IELTS, CEFR, SAT yoki xalqaro olimpiada sovrindorlik diplomlari." },
 ];
 
 const PORTALS = [
-  { icon: "🏫", title: "UzBMS (DTM) Portali", desc: "Davlat test markaziga ro'yxatdan o'tish va natijalarni ko'rish.", link: "uzbms.dtm.uz" },
-  { icon: "🏛️", title: "My.gov.uz", desc: "Rasmiy davlat xizmatlari portali orqali hujjat tasdiqlash.", link: "my.gov.uz" },
-];
-
-const NEWS = [
-  { badge: "Yangilik", title: "O'zbekistonning Top 10 universiteti 2024 yilgi qabul uchun kvotalarni e'lon qildi", date: "15 May 2024" },
+  { title: "UzBMS (DTM) Portali", desc: "Davlat test markaziga ro'yxatdan o'tish va test natijalarini tekshirish.", link: "my.dtm.uz" },
+  { title: "Yagona Interaktiv Davlat Xizmatlari", desc: "Elektron hujjat topshirish va OTMlarga ariza yo'llash tizimi.", link: "my.gov.uz" },
 ];
 
 const FAQS_DATA = [
-  { q: "Qaysi universitetlarga murojaat qilishim mumkin?", a: "EduUZ platformasi orqali O'zbekistondagi 50+ davlat va xususiy universitetlarga murojaat qilishingiz mumkin. Filtr yordamida shahar, yo'nalish va grant turini tanlang." },
-  { q: "Hujjatlarni qanday taqdim etish kerak?", a: "Barcha hujjatlar raqamli shaklda — PDF yoki JPG formatida universitetning rasmiy portali orqali yuklanadi. Originallar qabul paytida taqdim etiladi." },
-  { q: "Subsidiya qachon e'lon qilinadi?", a: "Davlat granti natijalari odatda har yili Avgust oyida DTM saytida e'lon qilinadi. Xususiy universitetlar esa aprel-may oylarida o'z natijalari haqida xabar beradi." },
-  { q: "Chet el universiteti uchun qanday murojaat qilish mumkin?", a: "Xorijiy universitetlarga kirish uchun IELTS/TOEFL, SAT/GRE sertifikatlari talab qilinadi. EduUZ platformasi yordamida to'g'ridan-to'g'ri arizangizni yuboring." },
-  { q: "Grant uchun minimum ball qancha?", a: "Grant ballari har yili o'zgarib turadi. Odatda bakalavr uchun 56.7+ ball, magistratura uchun 60+ ball talab etiladi." },
-  { q: "Ariza topshirish muddati qachon tugaydi?", a: "DTM imtihonlari uchun ro'yxatdan o'tish odatda Mart-Aprel oylarida tugaydi. Xususiy universitetlar esa yil davomida qabul qilishi mumkin." },
+  { q: "Qaysi universitetlarga bir vaqtda ariza topshirish mumkin?", a: "Davlat oliygohlarida DTM tizimi orqali 5 tagacha yo'nalishni tanlash mumkin. Xususiy va xalqaro universitetlarga esa mustaqil ravishda istalgancha hujjat topshirishga ruxsat etiladi." },
+  { q: "Hujjatlar qanday shaklda qabul qilinadi?", a: "Barcha hujjatlar elektron shaklda — PDF yoki sifatli JPG ko'rinishida rasmiy portal orqali topshiriladi. Qabul qilingandan so'ng originallari taqdim etiladi." },
+  { q: "Grant ballari qachon rasman e'lon qilinadi?", a: "Davlat granti va to'lov-shartnoma asosidagi mandat natijalari har yili avgust oyining oxirida Davlat Test Markazi tomonidan e'lon qilinadi." },
+  { q: "IELTS sertifikati uchun qanday imtiyozlar bor?", a: "IELTS 5.5+ yoki B2 darajadagi milliy sertifikatga ega talabgorlarga chet tili fanidan maksimal ball avtomatik ravishda beriladi." },
 ];
-
-function StepCard({ step, index }) {
-  return (
-    <div style={{
-      flex: "1 1 160px",
-      borderRadius: 14,
-      padding: "20px 16px",
-      border: "1px solid #1e293b",
-      textAlign: "center",
-      position: "relative",
-    }}>
-      <div style={{
-        width: 44, height: 44, borderRadius: "50%",
-        background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 20, margin: "0 auto 12px",
-      }}>{step.icon}</div>
-      <div style={{
-        position: "absolute", top: 12, right: 14,
-        width: 22, height: 22, borderRadius: "50%",
-        background: "#1e293b", color: "#6366f1",
-        fontSize: 11, fontWeight: 800,
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>{index + 1}</div>
-      <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 700, margin: "0 0 6px" }}>{step.title}</h4>
-      <p style={{ color: "#64748b", fontSize: 12, lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
-    </div>
-  );
-}
-
-function FAQItem({ faq, isOpen, onToggle, onAsk }) {
-  return (
-    <div style={{
-      border: "1px solid #1e293b",
-      borderRadius: 12,
-      overflow: "hidden",
-      transition: "border-color 0.2s",
-    }}>
-      <button
-        onClick={onToggle}
-        style={{
-          width: "100%", background: "none", border: "none",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "16px 18px", cursor: "pointer", textAlign: "left", gap: 12,
-        }}
-      >
-        <span style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600 }}>{faq.q}</span>
-        <span style={{ color: "#6366f1", fontSize: 18, flexShrink: 0, transition: "transform 0.2s", transform: isOpen ? "rotate(180deg)" : "none" }}>⌄</span>
-      </button>
-      {isOpen && (
-        <div style={{ padding: "0 18px 16px" }}>
-          <p style={{ color: "#94a3b8", fontSize: 13, lineHeight: 1.7, margin: "0 0 10px" }}>{faq.a}</p>
-          <button onClick={() => onAsk(faq.q)} style={{
-            background: "transparent", border: "1px solid #6366f155",
-            color: "#a78bfa", borderRadius: 6, padding: "4px 12px",
-            fontSize: 11, cursor: "pointer",
-          }}>🤖 AI dan batafsil so'rash</button>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function AIModal({ question, onClose }) {
   const [result, setResult] = useState("");
@@ -103,16 +35,13 @@ function AIModal({ question, onClose }) {
 
   async function ask(prompt) {
     if (!prompt.trim()) return;
-    setLoading(true);
-    setResult("");
+    setLoading(true); setResult("");
     try {
       const { answer, usingFallback } = await askGemini(prompt);
       if (usingFallback || !answer) {
         const { answer: fallback } = findBestAnswer(prompt);
         setResult(fallback || "Xatolik yuz berdi.");
-      } else {
-        setResult(answer);
-      }
+      } else { setResult(answer); }
     } catch {
       const { answer: fallback } = findBestAnswer(prompt);
       setResult(fallback || "Xatolik yuz berdi.");
@@ -121,7 +50,7 @@ function AIModal({ question, onClose }) {
   }
 
   useEffect(() => {
-    if (!question) return undefined;
+    if (!question) return;
     let active = true;
     (async () => {
       try {
@@ -130,73 +59,71 @@ function AIModal({ question, onClose }) {
         if (usingFallback || !answer) {
           const { answer: fallback } = findBestAnswer(question);
           setResult(fallback || "Xatolik yuz berdi.");
-        } else {
-          setResult(answer);
-        }
+        } else { setResult(answer); }
       } catch {
         if (!active) return;
         const { answer: fallback } = findBestAnswer(question);
         setResult(fallback || "Xatolik yuz berdi.");
-      } finally {
-        if (active) setLoading(false);
-      }
+      } finally { if (active) setLoading(false); }
     })();
     return () => { active = false; };
   }, [question]);
 
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "#000000bb", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: "#111827", borderRadius: 20, padding: 28, maxWidth: 500, width: "100%", border: "1px solid #334155", maxHeight: "85vh", overflowY: "auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <h2 style={{ color: "#fff", fontSize: 17, fontWeight: 800, margin: 0 }}>🤖 AI Maslahatchi</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#64748b", fontSize: 20, cursor: "pointer" }}>✕</button>
+    <div onClick={onClose} className="fixed inset-0 bg-[#111111]/70 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+      <div onClick={e => e.stopPropagation()} className="bg-[#ede3cc] border-4 border-[#111111] w-full max-w-lg max-h-[85vh] overflow-y-auto gazeta-shadow-black">
+        <div className="flex items-center justify-between px-5 py-3 border-b-2 border-[#111111] bg-[#f4ecd8]">
+          <h2 className="text-xs font-black uppercase newspaper-mono text-[#c1121f]">★ AI QABUL MASLAHATCHISI</h2>
+          <button onClick={onClose} className="w-7 h-7 border-2 border-[#111111] flex items-center justify-center font-black hover:bg-[#c1121f] hover:text-white transition-colors cursor-pointer">
+            ✕
+          </button>
         </div>
-
-        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && ask(input)}
-            placeholder="Savolingizni yozing..."
-            style={{ flex: 1, background: "#1a2340", border: "1px solid #334155", borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 13, outline: "none" }}
-          />
-          <button onClick={() => ask(input)} style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", border: "none", borderRadius: 8, padding: "10px 16px", color: "#fff", cursor: "pointer", fontWeight: 700 }}>↵</button>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 14 }}>
-          {["Qabul hujjatlari ro'yxati?", "DTM balli qancha bo'lishi kerak?", "Xorijga o'qishga ketish uchun nima kerak?"].map(q => (
-            <button key={q} onClick={() => { setInput(q); ask(q); }} style={{ background: "#1a2340", border: "1px solid #334155", color: "#94a3b8", borderRadius: 8, padding: "9px 14px", fontSize: 12, cursor: "pointer", textAlign: "left" }}>{q}</button>
-          ))}
-        </div>
-
-        {loading && <div style={{ textAlign: "center", color: "#6366f1", padding: 20 }}><div style={{ fontSize: 28 }}>⟳</div><p style={{ margin: "8px 0 0", fontSize: 13 }}>AI javob tayyorlamoqda...</p></div>}
-        {result && (
-          <div style={{ background: "#1a2340", borderRadius: 12, padding: 16, border: "1px solid #6366f133" }}>
-            <p style={{ color: "#00e5a0", fontSize: 11, margin: "0 0 8px", fontWeight: 700 }}>🤖 AI JAVOBI</p>
-            <p style={{ color: "#e2e8f0", fontSize: 13, lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{result}</p>
+        <div className="p-5 space-y-4">
+          <div className="flex gap-2">
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && ask(input)}
+              placeholder="Qabul bo'yicha savolingizni yozing..."
+              className="flex-1 px-3 py-2 text-xs"
+            />
+            <button onClick={() => ask(input)} className="bg-[#c1121f] text-white px-4 py-2 font-black text-xs newspaper-mono hover:bg-[#111111] transition-colors cursor-pointer">→</button>
           </div>
-        )}
+
+          <div className="flex flex-col gap-2">
+            {["Qabul hujjatlari ro'yxati?", "DTM balli qanday hisoblanadi?", "Xususiy OTMga kirish shartlari qanday?"].map(q => (
+              <button key={q} onClick={() => { setInput(q); ask(q); }}
+                className="border border-[#111111] bg-[#f9f5ea] px-3 py-2 text-xs text-left hover:bg-[#111111] hover:text-white transition-colors cursor-pointer newspaper-mono">
+                ➔ {q}
+              </button>
+            ))}
+          </div>
+
+          {loading && <div className="text-center py-6 text-xs newspaper-mono text-[#8b5a2b]">AI javob tayyorlamoqda...</div>}
+          {result && (
+            <div className="border-2 border-[#111111] bg-[#f9f5ea] p-4">
+              <p className="text-[10px] newspaper-mono text-[#c1121f] mb-2 font-black">★ JAVOB:</p>
+              <p className="text-xs font-serif text-[#111111] leading-relaxed whitespace-pre-wrap">{result}</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-export default function EduUZQabul() {
+export default function Admissions() {
   const [search, setSearch] = useState("");
   const [docFilter, setDocFilter] = useState("Barchasi");
   const [openFaq, setOpenFaq] = useState(null);
   const [faqSearch, setFaqSearch] = useState("");
   const [aiQ, setAiQ] = useState(null);
   const [aiOpen, setAiOpen] = useState(false);
-  const [docsOpen, setDocsOpen] = useState(false);
 
-  const docFilters = ["Barchasi", "Majburiy", "Sertifikatlar", "Rasmiy"];
-  const docCategories = { "Barchasi": DOCS, "Majburiy": DOCS.slice(0, 2), "Sertifikatlar": [DOCS[3]], "Rasmiy": [DOCS[0], DOCS[1]] };
-
+  const docCategories = { "Barchasi": DOCS, "Majburiy": DOCS.slice(0, 2), "Sertifikatlar": [DOCS[3]] };
   const filteredDocs = (docCategories[docFilter] || DOCS).filter(d =>
     d.title.toLowerCase().includes(search.toLowerCase()) || d.desc.toLowerCase().includes(search.toLowerCase())
   );
-
   const filteredFaqs = FAQS_DATA.filter(f =>
     f.q.toLowerCase().includes(faqSearch.toLowerCase()) || f.a.toLowerCase().includes(faqSearch.toLowerCase())
   );
@@ -204,165 +131,156 @@ export default function EduUZQabul() {
   function openAI(q) { setAiQ(q); setAiOpen(true); }
 
   return (
-    <div style={{ minHeight: "100vh", fontFamily: "'Inter','Segoe UI',sans-serif", color: "#fff" }}>
-
+    <div className="min-h-screen bg-[#f4ecd8] text-[#111111] pb-12 sm:pb-16">
       {/* Hero */}
-      <header style={{ textAlign: "center", padding: "56px 20px 44px" }}>
-        <div style={{ display: "inline-block", background: "#6366f122", border: "1px solid #6366f144", borderRadius: 20, padding: "3px 14px", fontSize: 11, color: "#a78bfa", fontWeight: 700, letterSpacing: 1, marginBottom: 16 }}>
-          EduUZ BILAN BIRGALIKDA
-        </div>
-        <h1 style={{ fontSize: "clamp(26px,5vw,44px)", fontWeight: 900, margin: "0 0 12px", lineHeight: 1.2 }}>
-          O'qishga kirish jarayoni va{" "}
-          <span style={{ background: "linear-gradient(135deg,#6366f1,#00e5a0)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>qabul</span>
-        </h1>
-        <p style={{ color: "#94a3b8", fontSize: 14, maxWidth: 500, margin: "0 auto 28px", lineHeight: 1.6 }}>
-          Kelajagingizni bir qadam oldinda quring. EduUZ orqali O'zbekistonning eng yaxshi universitetlarida hujjat topshirishni boshlang.
-        </p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <button onClick={() => openAI("Universitetga hujjat topshirish jarayonini tushuntir")} style={{
-            background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
-            border: "none", borderRadius: 10, padding: "12px 24px",
-            color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer",
-          }}>Ariza topshirish →</button>
-          <button onClick={() => openAI("EduUZ platformasi qanday ishlaydi?")} style={{
-            background: "transparent", border: "1px solid #334155",
-            borderRadius: 10, padding: "12px 24px",
-            color: "#94a3b8", fontSize: 14, cursor: "pointer",
-          }}>Platformani tushunish</button>
+      <header className="border-b-2 border-[#111111]">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-8 py-8 sm:py-12 text-center">
+          <span className="gazeta-stamp-red mb-2 sm:mb-3 text-[9px] sm:text-xs">★ RASMIY YO'RIQNOMA ★</span>
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight newspaper-headline mb-3 sm:mb-4">
+            OTMLARGA QABUL VA <br />
+            <span className="text-[#c1121f] underline decoration-2 sm:decoration-4 underline-offset-4">HUJJAT TOPSHIRISH</span> BOSQICHLARI
+          </h1>
+          <p className="font-serif text-xs sm:text-sm text-[#4b5563] max-w-lg mx-auto mb-6 sm:mb-8 leading-relaxed px-2">
+            Abituriyentlar va ota-onalar uchun qabul talablari, hujjatlar ro'yxati va rasmiy davlat portallari haqida to'liq tushuntirish.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 justify-center px-2">
+            <button
+              onClick={() => openAI("Universitetga hujjat topshirish tartibini to'liq tushuntir")}
+              className="w-full sm:w-auto bg-[#c1121f] text-white px-5 py-3 font-black text-xs uppercase tracking-widest border-2 border-[#111111] gazeta-shadow-black hover:bg-[#111111] transition-all cursor-pointer newspaper-mono"
+            >
+              QABUL TARTIBINI SO'RASH →
+            </button>
+            <button
+              onClick={() => openAI("IELTS sertifikati bilan qanday imtiyozlar olish mumkin?")}
+              className="w-full sm:w-auto border-2 border-[#111111] bg-[#f9f5ea] text-[#111111] px-5 py-3 font-black text-xs uppercase tracking-widest hover:bg-[#111111] hover:text-white transition-all cursor-pointer newspaper-mono"
+            >
+              IMTIYOZLARNI O'RGANISH
+            </button>
+          </div>
         </div>
       </header>
 
-      <main style={{ maxWidth: 880, margin: "0 auto", padding: "0 16px 48px" }}>
-
-        {/* Steps */}
-        <section style={{ marginBottom: 40 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>Qabul bosqichlari</h2>
-            <span style={{ color: "#64748b", fontSize: 12 }}>4 ta oson qadam orqali universitetga kiring.</span>
+      <main className="max-w-5xl mx-auto px-3 sm:px-4 md:px-8 py-6 sm:py-10 space-y-8 sm:space-y-12">
+        {/* Bosqichlar */}
+        <section className="bg-[#ede3cc] border-2 sm:border-4 border-[#111111] p-4 sm:p-6 md:p-8 gazeta-shadow-black">
+          <div className="mb-6">
+            <span className="text-xs font-black uppercase text-[#c1121f] newspaper-mono">// KETMA-KETLIK</span>
+            <h2 className="text-2xl font-black uppercase newspaper-headline text-[#111111]">QABULNING 4 ASOSIY POG'ONASI</h2>
           </div>
-          <div className="grid grid-cols-2 gap-3 md:flex md:gap-3">
-            {STEPS.map((s, i) => <StepCard key={i} step={s} index={i} />)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {STEPS.map((s, idx) => {
+              const isRed = idx % 2 === 0;
+              return (
+                <div key={idx} className={`bg-[#f9f5ea] border-2 ${isRed ? "border-[#c1121f]" : "border-[#111111]"} p-4 flex flex-col justify-between`}>
+                  <div>
+                    <span className={`text-xs font-black px-2 py-0.5 newspaper-mono text-white ${isRed ? "bg-[#c1121f]" : "bg-[#111111]"} inline-block mb-2`}>
+                      {s.num}-QADAM
+                    </span>
+                    <h4 className="font-black uppercase newspaper-headline text-sm mb-1 text-[#111111]">{s.title}</h4>
+                    <p className="font-serif text-xs text-[#4b5563] leading-relaxed">{s.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
-        {/* Docs (collapsible on mobile) + Portals */}
-        <section className="grid grid-cols-2 gap-5 mb-10 items-start">
-          {/* Docs - collapsible card (mobile only) */}
-          <div className="col-span-2 md:col-span-1 border border-[#1e293b] rounded-2xl p-5">
-            {/* Mobile toggle */}
-            <button
-              onClick={() => setDocsOpen(o => !o)}
-              className="w-full flex justify-between items-center cursor-pointer md:hidden"
-            >
-              <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0, color: docsOpen ? "#a78bfa" : "#fff" }}>Kerakli hujjatlar ro'yxati</h3>
-              <span style={{ color: "#6366f1", fontSize: 18, transition: "transform 0.2s", transform: docsOpen ? "rotate(180deg)" : "none" }}>⌄</span>
-            </button>
+        {/* Hujjatlar va Rasmiy Portallar */}
+        <section className="grid md:grid-cols-2 gap-6">
+          {/* Hujjatlar */}
+          <div className="bg-[#f9f5ea] border-2 border-[#111111] p-6 gazeta-shadow-black">
+            <h3 className="font-black uppercase newspaper-headline text-base mb-4 text-[#111111]">
+              📋 KERAKLI HUJJATLAR RO'YXATI
+            </h3>
+            <div className="flex gap-2 mb-4">
+              {["Barchasi", "Majburiy", "Sertifikatlar"].map(f => (
+                <button
+                  key={f}
+                  onClick={() => setDocFilter(f)}
+                  className={`px-3 py-1 text-xs font-black uppercase newspaper-mono border ${docFilter === f ? "bg-[#111111] text-white border-[#111111]" : "bg-[#ede3cc] text-[#111111] border-[#111111]"}`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
 
-            {/* Desktop heading (always visible) */}
-            <h3 className="hidden md:block" style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>Kerakli hujjatlar ro'yxati</h3>
+            <div className="space-y-3">
+              {filteredDocs.map((d, i) => (
+                <div key={i} className="border border-[#111111]/30 bg-[#ede3cc] p-3 flex items-start gap-3">
+                  <span className="text-xl">{d.icon}</span>
+                  <div>
+                    <h5 className="font-black text-xs uppercase newspaper-headline text-[#111111]">{d.title}</h5>
+                    <p className="font-serif text-xs text-[#4b5563] mt-0.5">{d.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-            <div className={`${docsOpen ? "block" : "hidden"} md:block`}>
-              {/* Search */}
-              <div className="bg-[#111827] border border-[#1e293b] rounded-lg px-3 py-[7px] flex items-center gap-2 mt-3.5 md:mt-3.5 mb-2.5">
-                <span className="text-[#475569]">🔍</span>
-                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Hujjat qidirish..." className="flex-1 bg-transparent border-none text-white text-xs outline-none" />
-              </div>
-
-              {/* Filter tabs */}
-              <div className="flex gap-1.5 mb-3.5 flex-wrap">
-                {docFilters.map(f => (
-                  <button key={f} onClick={() => setDocFilter(f)} className={`rounded-full px-2.5 py-[3px] text-[11px] cursor-pointer ${docFilter === f ? "bg-[#6366f122] border border-[#6366f1] text-[#a78bfa]" : "bg-transparent border border-[#334155] text-[#64748b]"}`}>{f}</button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 gap-2.5">
-                {filteredDocs.length === 0 && <p className="text-[#475569] text-[13px]">Hujjat topilmadi.</p>}
-                {filteredDocs.map((d, i) => (
-                  <div key={i} className="flex gap-2.5 items-start">
-                    <div className="w-8 h-8 rounded-lg bg-[#1a2340] flex items-center justify-center text-base shrink-0">{d.icon}</div>
-                    <div>
-                      <div className="text-white text-[13px] font-semibold">{d.title}</div>
-                      <div className="text-[#64748b] text-[11px] leading-normal">{d.desc}</div>
-                    </div>
+          {/* Portallar */}
+          <div className="bg-[#f9f5ea] border-2 border-[#c1121f] p-6 gazeta-shadow-red flex flex-col justify-between">
+            <div>
+              <h3 className="font-black uppercase newspaper-headline text-base mb-4 text-[#c1121f]">
+                🏛️ RASMIY QABUL PORTALLARI
+              </h3>
+              <div className="space-y-4">
+                {PORTALS.map((p, i) => (
+                  <div key={i} className="border border-[#111111]/30 bg-[#ede3cc] p-4">
+                    <h5 className="font-black text-sm uppercase newspaper-headline text-[#111111]">{p.title}</h5>
+                    <p className="font-serif text-xs text-[#4b5563] my-1 leading-relaxed">{p.desc}</p>
+                    <a
+                      href={`https://${p.link}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-black text-[#c1121f] underline newspaper-mono"
+                    >
+                      → {p.link}
+                    </a>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Portals + News: mobile = 2 per row & full-width news; desktop = stacked right column */}
-          <div className="contents md:flex md:flex-col md:gap-3.5">
-            {PORTALS.map((p, i) => (
-              <div key={i} className="h-full border border-[#1e293b] rounded-xl px-4 py-[18px] flex flex-col md:flex-row gap-3 items-center md:items-start text-center md:text-left">
-                <div className="w-10 h-10 rounded-[10px] bg-[#1a2340] flex items-center justify-center text-xl shrink-0">{p.icon}</div>
-                <div className="flex flex-col items-center md:items-start">
-                  <div className="text-white text-sm font-bold mb-1">{p.title}</div>
-                  <p className="hidden md:block text-[#64748b] text-xs leading-normal mb-2">{p.desc}</p>
-                  <a href={`https://${p.link}`} target="_blank" rel="noreferrer" className="text-[#6366f1] text-[11px] no-underline">🔗 {p.link}</a>
-                </div>
-              </div>
-            ))}
-
-            {/* News - full width on mobile, normal on desktop */}
-            {NEWS.map((n, i) => (
-              <div key={i} className="col-span-2 border border-[#1e293b] rounded-xl overflow-hidden relative">
-                <div className="bg-gradient-to-br from-[#1a2340] to-[#0f172a] p-4">
-                  <span className="bg-[#00e5a022] text-[#00e5a0] border border-[#00e5a055] rounded-full px-2.5 py-[2px] text-[10px] font-bold">{n.badge}</span>
-                  <h4 className="text-white text-[13px] font-bold mt-2 mb-1 leading-snug">{n.title}</h4>
-                  <span className="text-[#475569] text-[11px]">{n.date}</span>
-                  <button onClick={() => openAI(n.title)} className="block w-full md:w-auto md:inline-block mt-2 bg-transparent border border-[#6366f155] text-[#a78bfa] rounded-md px-3 py-1.5 text-[11px] cursor-pointer text-center">Batafsil →</button>
-                </div>
-              </div>
-            ))}
+            <div className="mt-6 pt-4 border-t border-[#111111]/30 text-center">
+              <span className="text-[11px] font-bold text-[#8b5a2b] newspaper-mono">
+                Barcha arizalar faqat rasmiy davlat tizimlari orqali tasdiqlanadi.
+              </span>
+            </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section style={{ marginBottom: 40 }}>
-          <h2 style={{ textAlign: "center", fontSize: 20, fontWeight: 800, margin: "0 0 6px" }}>Tez-tez so'raladigan savollar</h2>
-          <p style={{ textAlign: "center", color: "#64748b", fontSize: 13, margin: "0 0 20px" }}>Savolingizni toping yoki AI dan so'rang.</p>
+        <section className="bg-[#ede3cc] border-2 border-[#111111] p-6 sm:p-8">
+          <h3 className="text-xl font-black uppercase newspaper-headline text-[#111111] mb-4 text-center">
+            KO'P SO'RALADIGAN SAVOLLAR (FAQ)
+          </h3>
 
-          {/* FAQ search */}
-          <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 10, padding: "9px 16px", display: "flex", alignItems: "center", gap: 8, marginBottom: 14, maxWidth: 500, margin: "0 auto 14px" }}>
-            <span style={{ color: "#475569" }}>🔍</span>
-            <input value={faqSearch} onChange={e => setFaqSearch(e.target.value)} placeholder="Savol qidirish..." style={{ flex: 1, background: "none", border: "none", color: "#fff", fontSize: 13, outline: "none" }} />
-            {faqSearch && <button onClick={() => setFaqSearch("")} style={{ background: "none", border: "none", color: "#475569", cursor: "pointer", fontSize: 16 }}>✕</button>}
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {filteredFaqs.length === 0 && (
-              <div style={{ textAlign: "center", padding: 24 }}>
-                <p style={{ color: "#475569", fontSize: 14, margin: "0 0 12px" }}>Savol topilmadi. AI dan so'raysizmi?</p>
-                <button onClick={() => openAI(faqSearch)} style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", border: "none", borderRadius: 8, padding: "10px 20px", color: "#fff", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>🤖 AI dan so'rash</button>
-              </div>
-            )}
+          <div className="space-y-3">
             {filteredFaqs.map((f, i) => (
-              <FAQItem key={i} faq={f} isOpen={openFaq === i} onToggle={() => setOpenFaq(openFaq === i ? null : i)} onAsk={openAI} />
+              <div key={i} className="bg-[#f9f5ea] border border-[#111111]">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex justify-between items-center p-4 text-left font-black text-xs sm:text-sm uppercase newspaper-headline cursor-pointer hover:text-[#c1121f]"
+                >
+                  <span>{f.q}</span>
+                  <span className="text-base font-bold ml-2">{openFaq === i ? "—" : "+"}</span>
+                </button>
+                {openFaq === i && (
+                  <div className="px-4 pb-4 pt-1 border-t border-[#111111]/20 font-serif text-xs text-[#4b5563] leading-relaxed">
+                    <p>{f.a}</p>
+                    <button
+                      onClick={() => openAI(f.q)}
+                      className="mt-2 text-[11px] font-bold text-[#c1121f] underline newspaper-mono cursor-pointer"
+                    >
+                      AI dan batafsil so'rash →
+                    </button>
+                  </div>
+                )}
+              </div>
             ))}
-          </div>
-
-          <div style={{ textAlign: "center", marginTop: 20 }}>
-            <button onClick={() => openAI("Universitetga kirish haqida savolim bor")} style={{
-              background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
-              border: "none", borderRadius: 10, padding: "12px 28px",
-              color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer",
-            }}>🤖 AI Maslahatchi bilan gaplashing</button>
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer style={{ borderTop: "1px solid #1e293b", padding: "20px 16px", maxWidth: 880, margin: "0 auto", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <div style={{ color: "#fff", fontWeight: 800, fontSize: 16 }}>EduUZ</div>
-          <p style={{ color: "#475569", fontSize: 11, margin: "4px 0 0" }}>O'zbekistonning ilg'or ta'lim muassasalari.</p>
-        </div>
-        <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-          {["About Us", "Privacy Policy", "Contact Support", "Terms of Service"].map(l => (
-            <a key={l} href="#" style={{ color: "#475569", fontSize: 11, textDecoration: "none" }}>{l}</a>
-          ))}
-        </div>
-      </footer>
 
       {aiOpen && <AIModal question={aiQ} onClose={() => { setAiOpen(false); setAiQ(null); }} />}
     </div>

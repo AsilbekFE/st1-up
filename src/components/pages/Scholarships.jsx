@@ -5,121 +5,87 @@ import { findBestAnswer } from "../../ai/chatEngine";
 const GRANTS = [
   {
     id: 1,
-    badge: "100% Qoplash",
-    badgeColor: "#00e5a0",
+    badge: "100% QOPLASH",
     title: '"El-yurt umidi" jamg\'arma grantlari',
-    desc: "Xorijiy davlatlarda tahsil oluvchi, magistratura, doktorantura va stajerlik dasturlarida o'qishni moliyalashtiradi.",
-    tags: ["100% Qoplash", "50 ta grant"],
-    links: ["MTM 1.2x", "GPA 0.0x"],
-    color: "#1a2340",
-    accent: "#00e5a0",
+    desc: "Xorijiy davlatlarda magistratura, doktorantura va stajirovka dasturlarini to'liq moliyalashtirish bo'yicha davlat dasturi.",
+    tags: ["Xorijda Ta'lim", "50+ Grant", "To'liq Stipendiya"],
+    links: ["Bakalavr/Magistr", "IELTS 6.5+"],
   },
   {
     id: 2,
-    badge: "Davlat granti",
-    badgeColor: "#a78bfa",
-    title: "OTMlarga kirish uchun davlat granti",
-    desc: "O'zbekistonning barcha davlat oliy ta'lim muassasalari uchun test natijalariga asosan taqdim etiladi.",
-    tags: ["Bakalavr", "Magistratura"],
-    links: ["OTM test natijalari", "Akademik ko'rsatkichlar"],
-    color: "#1a2340",
-    accent: "#a78bfa",
+    badge: "DAVLAT GRANTI",
+    title: "OTMlarga kirish uchun davlat byudjeti granti",
+    desc: "O'zbekistonning barcha davlat oliy ta'lim muassasalari uchun DTM test natijalariga asosan ajratiladigan 100% bepul o'qish.",
+    tags: ["Bakalavr", "DTM Imtihon", "Davlat Kengashi"],
+    links: ["Bepul Ta'lim", "Oylik Stipendiya"],
   },
   {
     id: 3,
-    badge: "Prezident granti",
-    badgeColor: "#f59e0b",
-    title: "Yangi O'zbekiston universiteti prezident granti",
-    desc: "Iqtidorli o'quvchilar uchun o'qish uchun to'liq to'lovni qoplaydigan maxsus prezident granti.",
-    tags: ["To'liq stipendiya", "Tanlangan yo'nalishlar"],
-    links: ["Elektronik holat Ma'lumoti", "Sertifikat talab qilinadi"],
-    color: "#1a2340",
-    accent: "#f59e0b",
+    badge: "PREZIDENT GRANTI",
+    title: "Yangi O'zbekiston universiteti prezident stipendiyasi",
+    desc: "Respublika iqtidorli o'quvchilari uchun o'qish xarajatlarini to'liq qoplaydigan maxsus prezidentlik mukofot dasturi.",
+    tags: ["Prezident Granti", "Muhandislik", "Maxsus Kengash"],
+    links: ["Diplom Tan Olinadi", "Xalqaro Mezon"],
   },
   {
     id: 4,
-    badge: "100% Qoplash",
-    badgeColor: "#00e5a0",
-    title: "WIUT Merit-based Scholarship",
-    desc: "Eng yuqori o'quvchilarga ega bo'lgan talabalarga ajratiladigan to'liq stipendiya dasturi.",
-    tags: ["100% Grant"],
-    links: ["Merit Award+"],
-    color: "#1a2340",
-    accent: "#00e5a0",
+    badge: "XUSUSIY GRANT",
+    title: "WIUT Merit-based Academic Scholarship",
+    desc: "Vestminster xalqaro universitetida eng yuqori imtihon ballari to'plagan talabalar uchun yillik 100% grant dasturi.",
+    tags: ["100% Kontrakt", "Ingliz Tilida", "WIUT"],
+    links: ["Merit Award", "Xalqaro Diplom"],
   },
   {
     id: 5,
-    badge: "Ijtimoiy grant",
-    badgeColor: "#60a5fa",
-    title: "CAU (ex AKFA) ijtimoiy grant dasturi",
-    desc: "Ijtimoiy himoyaga muhtoj talabalar uchun ta'lim xarajatlarini qoplashga yo'naltirilgan grant.",
-    tags: ["Muhtoj oilalar", "Hujjat talab qilinadi"],
-    links: ["To'liq Qoplash"],
-    color: "#1a2340",
-    accent: "#60a5fa",
+    badge: "IJTIMOIY GRANT",
+    title: "Ijtimoiy himoyaga muhtoj yoshlar uchun stipendiyalar",
+    desc: "Ijtimoiy himoyaga muhtoj va iqtidorli oila farzandlari uchun OTM kontrakt pullarini to'liq qoplab berish maxsus loyihasi.",
+    tags: ["Ijtimoiy Ko'mak", "Hujjatli Qabul", "Fond"],
+    links: ["To'liq Qoplash", "Yotoqxona Bepul"],
   },
 ];
 
 const STEPS = [
-  { num: 1, title: "Grantni tanlash", desc: "Siz uchun mos grantlarni toping va tanlang." },
-  { num: 2, title: "Hujjatni tayyorlash", desc: "Kerakli sertifikatlar va hujjatlaringizni to'plang." },
-  { num: 3, title: "Ariza yuborish", desc: "Barcha hujjatlar tayyor bo'lsa, arizangizni yuboring." },
-  { num: 4, title: "Natijani kutish", desc: "Natija va javob uchun email/telefon orqali xabar beriladi." },
+  { num: "I", title: "GRANTNI TANLASH", desc: "Sizning mutaxassisligingiz va mezonlaringizga mos grantni saralash." },
+  { num: "II", title: "HUJJAT TO'PLASH", desc: "Sertifikatlar, tavsiyanomalar va diplom nusxalarini tayyorlash." },
+  { num: "III", title: "ARIZA TOPSHIRISH", desc: "Gazeta portalida ko'rsatilgan rasmiy havola orqali ro'yxatdan o'tish." },
+  { num: "IV", title: "NATIJANI QABUL QILISH", desc: "Ekspertlar hay'ati xulosasi va stipendiya tasdiqnomasini olish." },
 ];
 
-function GrantCard({ grant, onDetails }) {
+function GrantCard({ grant, onDetails, idx }) {
+  const isRed = idx % 2 === 0;
   return (
-    <div style={{
-      background: "linear-gradient(135deg, #1a2340 0%, #111827 100%)",
-      borderRadius: 16,
-      padding: "20px",
-      border: `1px solid ${grant.accent}33`,
-      cursor: "pointer",
-      transition: "transform 0.2s, box-shadow 0.2s",
-      position: "relative",
-      overflow: "hidden",
-    }}
-      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = `0 8px 32px ${grant.accent}44`; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}
+    <div
+      className={`bg-[#f9f5ea] border-2 ${isRed ? "border-[#c1121f] gazeta-shadow-red" : "border-[#111111] gazeta-shadow-black"} p-5 flex flex-col justify-between cursor-pointer transition-transform hover:-translate-y-1`}
+      onClick={() => onDetails(grant)}
     >
-      <span style={{
-        background: grant.accent + "22",
-        color: grant.accent,
-        borderRadius: 20,
-        padding: "3px 12px",
-        fontSize: 11,
-        fontWeight: 700,
-        letterSpacing: 0.5,
-        marginBottom: 10,
-        display: "inline-block",
-        border: `1px solid ${grant.accent}55`,
-      }}>{grant.badge}</span>
-      <h3 style={{ color: "#fff", fontSize: 15, fontWeight: 700, margin: "8px 0", lineHeight: 1.4 }}>{grant.title}</h3>
-      <p style={{ color: "#94a3b8", fontSize: 12.5, lineHeight: 1.6, margin: "0 0 12px" }}>{grant.desc}</p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
-        {grant.tags.map(t => (
-          <span key={t} style={{ background: "#0f172a", color: "#94a3b8", border: "1px solid #334155", borderRadius: 6, padding: "2px 8px", fontSize: 11 }}>✓ {t}</span>
-        ))}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 newspaper-mono text-white ${isRed ? "bg-[#c1121f]" : "bg-[#111111]"}`}>
+            {grant.badge}
+          </span>
+          <span className="text-xs font-bold text-[#8b5a2b] newspaper-mono">№ 0{idx + 1}</span>
+        </div>
+        <h3 className="font-black text-base uppercase newspaper-headline leading-snug mb-2 text-[#111111]">{grant.title}</h3>
+        <p className="font-serif text-xs leading-relaxed mb-4 text-[#4b5563]">{grant.desc}</p>
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {grant.tags.map(t => (
+            <span key={t} className="border border-[#111111]/40 px-2 py-0.5 text-[10px] font-bold uppercase newspaper-mono bg-[#ede3cc] text-[#111111]">
+              ✓ {t}
+            </span>
+          ))}
+        </div>
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-        {grant.links.map(l => (
-          <span key={l} style={{ color: grant.accent, fontSize: 11 }}>🔗 {l}</span>
-        ))}
+
+      <div className="pt-3 border-t border-[#111111]/30 flex justify-between items-center mt-3">
+        <span className="text-[11px] font-bold text-[#8b5a2b] newspaper-mono">{grant.links[0]}</span>
+        <button
+          onClick={(e) => { e.stopPropagation(); onDetails(grant); }}
+          className={`px-3 py-1.5 text-xs font-black uppercase tracking-wider text-white ${isRed ? "bg-[#c1121f] hover:bg-[#111111]" : "bg-[#111111] hover:bg-[#c1121f]"} transition-colors newspaper-mono`}
+        >
+          BATAFSIL →
+        </button>
       </div>
-      <button onClick={() => onDetails(grant)} style={{
-        background: "transparent",
-        border: `1px solid ${grant.accent}`,
-        color: grant.accent,
-        borderRadius: 8,
-        padding: "6px 16px",
-        fontSize: 12,
-        cursor: "pointer",
-        fontWeight: 600,
-        transition: "background 0.2s",
-      }}
-        onMouseEnter={e => e.currentTarget.style.background = grant.accent + "22"}
-        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-      >Batafsil →</button>
     </div>
   );
 }
@@ -148,78 +114,72 @@ function AIModal({ grant, onClose }) {
   }
 
   return (
-    <div style={{
-      position: "fixed", inset: 0, background: "#000000cc", zIndex: 1000,
-      display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
-    }} onClick={onClose}>
-      <div style={{
-        background: "#111827", borderRadius: 20, padding: 28,
-        maxWidth: 520, width: "100%", border: "1px solid #334155",
-        maxHeight: "85vh", overflowY: "auto",
-      }} onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-          <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 700, margin: 0 }}>🤖 AI Maslahatchi</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#94a3b8", fontSize: 20, cursor: "pointer" }}>✕</button>
+    <div
+      className="fixed inset-0 bg-[#111111]/70 z-50 flex items-center justify-center p-4 backdrop-blur-xs"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#ede3cc] border-4 border-[#111111] w-full max-w-lg p-6 md:p-8 gazeta-shadow-black"
+        style={{ maxHeight: "85vh", overflowY: "auto" }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center border-b-2 border-[#111111] pb-3 mb-4">
+          <div>
+            <span className="text-[10px] font-black uppercase text-[#c1121f] newspaper-mono block">★ TAHLILIY AXBOROT ★</span>
+            <h2 className="font-black uppercase tracking-widest text-base newspaper-headline">GRANT BO'YICHA AI MASLAHAT</h2>
+          </div>
+          <button onClick={onClose} className="border-2 border-[#111111] w-7 h-7 flex items-center justify-center font-black hover:bg-[#c1121f] hover:text-white transition-colors cursor-pointer">✕</button>
         </div>
 
         {grant && (
-          <div style={{ background: "#1a2340", borderRadius: 12, padding: 14, marginBottom: 16 }}>
-            <p style={{ color: "#94a3b8", fontSize: 12, margin: "0 0 4px" }}>Tanlangan grant:</p>
-            <p style={{ color: "#fff", fontSize: 14, fontWeight: 600, margin: 0 }}>{grant.title}</p>
+          <div className="bg-[#f9f5ea] border-2 border-[#111111] p-3 mb-4">
+            <p className="newspaper-mono text-[10px] font-black uppercase tracking-widest mb-1 text-[#8b5a2b]">TANLANGAN GRANT DASTURI:</p>
+            <p className="font-black text-sm uppercase newspaper-headline text-[#111111]">{grant.title}</p>
           </div>
         )}
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+        <div className="flex flex-col gap-2 mb-4">
           {[
             grant ? `"${grant.title}" granti uchun qanday hujjatlar kerak?` : null,
             grant ? `Bu grantga kimlar murojaat qila oladi?` : null,
             "O'zim uchun eng mos grantni toping.",
           ].filter(Boolean).map(q => (
-            <button key={q} onClick={() => askAI(q)} style={{
-              background: "#1a2340", border: "1px solid #334155",
-              color: "#94a3b8", borderRadius: 8, padding: "8px 14px",
-              fontSize: 12, cursor: "pointer", textAlign: "left",
-              transition: "border-color 0.2s",
-            }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = "#6366f1"}
-              onMouseLeave={e => e.currentTarget.style.borderColor = "#334155"}
-            >{q}</button>
+            <button
+              key={q}
+              onClick={() => askAI(q)}
+              className="bg-[#f9f5ea] border border-[#111111] text-[#111111] px-3 py-2 text-xs font-bold text-left hover:bg-[#111111] hover:text-white transition-colors cursor-pointer newspaper-mono"
+            >
+              ➔ {q}
+            </button>
           ))}
         </div>
 
-        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <div className="flex gap-2 mb-4">
           <input
             value={question}
             onChange={e => setQuestion(e.target.value)}
             onKeyDown={e => e.key === "Enter" && question.trim() && askAI(question)}
             placeholder="O'z savolingizni yozing..."
-            style={{
-              flex: 1, background: "#1a2340", border: "1px solid #334155",
-              borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 13,
-              outline: "none",
-            }}
+            className="flex-1 px-3 py-2 text-xs text-[#111111]"
           />
-          <button onClick={() => question.trim() && askAI(question)} style={{
-            background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-            border: "none", borderRadius: 8, padding: "10px 16px",
-            color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 600,
-          }}>Yuborish</button>
+          <button
+            onClick={() => question.trim() && askAI(question)}
+            className="bg-[#c1121f] text-white border-2 border-[#111111] px-4 font-black text-xs uppercase tracking-widest hover:bg-[#111111] transition-colors cursor-pointer newspaper-mono"
+          >
+            SO'RASH
+          </button>
         </div>
 
         {loading && (
-          <div style={{ textAlign: "center", color: "#6366f1", padding: 20 }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>⟳</div>
-            <p style={{ margin: 0, fontSize: 13 }}>AI javob tayyorlamoqda...</p>
+          <div className="text-center py-6 border-2 border-dashed border-[#111111] bg-[#f9f5ea]">
+            <span className="gazeta-stamp-red">AI JAVOB TAYYORLAMOQDA...</span>
           </div>
         )}
 
         {result && (
-          <div style={{
-            background: "#1a2340", borderRadius: 12, padding: 16,
-            border: "1px solid #6366f133",
-          }}>
-            <p style={{ color: "#00e5a0", fontSize: 11, margin: "0 0 8px", fontWeight: 700 }}>🤖 AI JAVOBI</p>
-            <p style={{ color: "#e2e8f0", fontSize: 13, lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{result}</p>
+          <div className="bg-[#f9f5ea] border-2 border-[#111111] p-4">
+            <p className="font-black text-[10px] uppercase tracking-widest mb-2 text-[#c1121f] newspaper-mono">★ AI EKSPERT JAVOBI:</p>
+            <p className="font-serif text-xs leading-relaxed text-[#111111] whitespace-pre-wrap">{result}</p>
           </div>
         )}
       </div>
@@ -227,67 +187,11 @@ function AIModal({ grant, onClose }) {
   );
 }
 
-function NewsletterAI() {
-  const [email, setEmail] = useState("");
-  const [msg, setMsg] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function subscribe() {
-    if (!email.includes("@")) { setMsg("To'g'ri email kiriting."); return; }
-    setLoading(true);
-    const prompt = `${email} emailiga obuna bo'lish tasdiqlandi. Qisqa, iliq xush kelibsiz xabari yoz.`;
-    try {
-      const { answer, usingFallback } = await askGemini(prompt);
-      if (usingFallback || !answer) {
-        const { answer: fallback } = findBestAnswer(prompt);
-        setMsg(fallback || "Obuna bo'ldingiz! Tez orada yangiliklar kelib turadi. 🎉");
-      } else {
-        setMsg(answer);
-      }
-      setEmail("");
-    } catch {
-      setMsg("Obuna bo'ldingiz! Tez orada yangiliklar kelib turadi. 🎉");
-    }
-    setLoading(false);
-  }
-
-  return (
-    <section style={{
-      background: "linear-gradient(135deg, #1a2340 0%, #0f172a 100%)",
-      borderRadius: 20, padding: "40px 32px", margin: "0 0 40px",
-      border: "1px solid #334155", textAlign: "center",
-    }}>
-      <h2 style={{ color: "#fff", fontSize: 22, fontWeight: 800, margin: "0 0 8px" }}>Yangilardan qolib ketmang</h2>
-      <p style={{ color: "#94a3b8", fontSize: 14, margin: "0 0 20px" }}>Birinchi bo'lib grantlar haqida xabar oling va kelajagingizni rejalashtiring.</p>
-      <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-        <input
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && subscribe()}
-          placeholder="Email manzilingiz"
-          style={{
-            background: "#0f172a", border: "1px solid #334155",
-            borderRadius: 10, padding: "12px 18px", color: "#fff",
-            fontSize: 14, minWidth: 240, outline: "none",
-          }}
-        />
-        <button onClick={subscribe} disabled={loading} style={{
-          background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-          border: "none", borderRadius: 10, padding: "12px 24px",
-          color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer",
-          opacity: loading ? 0.7 : 1,
-        }}>{loading ? "..." : "Obuna bo'lish"}</button>
-      </div>
-      {msg && <p style={{ color: "#00e5a0", marginTop: 14, fontSize: 13 }}>{msg}</p>}
-    </section>
-  );
-}
-
-export default function EduUZ() {
+export default function Scholarships() {
   const [grants, setGrants] = useState(GRANTS);
   const [modal, setModal] = useState(null);
   const [consultModal, setConsultModal] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("Barcha grantlar");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetch("/api/scholarships")
@@ -300,181 +204,72 @@ export default function EduUZ() {
       .catch(() => {});
   }, []);
 
-  const filters = ["Bakalavr", "Magistratura", "Doktorantura", "Xorijiy"];
+  const filtered = grants.filter(g =>
+    g.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    g.desc.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      fontFamily: "'Inter', 'Segoe UI', sans-serif",
-      color: "#fff",
-    }}>
-      {/* Hero */}
-      <header style={{
-        padding: "60px 24px 48px",
-        textAlign: "center",
-        borderBottom: "1px solid #1e293b",
-      }}>
-        <div style={{
-          display: "inline-block",
-          background: "#6366f122",
-          border: "1px solid #6366f155",
-          borderRadius: 20,
-          padding: "4px 14px",
-          fontSize: 11,
-          color: "#a78bfa",
-          fontWeight: 700,
-          letterSpacing: 1,
-          marginBottom: 18,
-        }}>⭐ SIZNING KELAJAGINGIZ UCHUN</div>
-        <h1 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 900, margin: "0 0 8px", lineHeight: 1.2 }}>
-          O'zbekistonda ta'lim<br />
-          <span style={{ background: "linear-gradient(135deg, #6366f1, #00e5a0)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            uchun grantlar
-          </span>
+    <div className="min-h-screen bg-[#f4ecd8] text-[#111111] pb-12 sm:pb-16">
+      {/* Header */}
+      <header className="px-3 pt-6 pb-6 sm:pt-10 sm:pb-8 text-center max-w-5xl mx-auto border-b-2 border-[#111111]">
+        <span className="gazeta-stamp-red mb-2 sm:mb-3 text-[9px] sm:text-xs">★ MAXSUS GRANTLAR RUKNI ★</span>
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight mb-2 sm:mb-3 leading-tight newspaper-headline">
+          100% BEPUL TA'LIM VA <br />
+          <span className="text-[#c1121f] underline decoration-2 sm:decoration-4 underline-offset-4">DAVLAT STIPENDIYALARI</span>
         </h1>
-        <p style={{ color: "#94a3b8", fontSize: 15, maxWidth: 480, margin: "0 auto 32px", lineHeight: 1.6 }}>
-          Kelajagingizni bugundan quring. Davlat, xalqaro va universitet grantlari bilan imkoniyatingiz cheksiz.
+        <p className="font-serif text-xs sm:text-sm text-[#4b5563] max-w-xl mx-auto mb-4 sm:mb-6 leading-relaxed px-2">
+          Iqtidorli va faol talabalar uchun O'zbekiston hamda xorijiy OTMlarda bepul ta'lim olishga yo'naltirilgan rasmiy grant dasturlari to'plami.
         </p>
 
-        {/* Search bar */}
-        <div style={{
-          background: "#111827",
-          borderRadius: 16,
-          padding: "16px 20px",
-          maxWidth: 700,
-          margin: "0 auto",
-          display: "flex",
-          gap: 10,
-          flexWrap: "wrap",
-          border: "1px solid #1e293b",
-        }}>
-          <input placeholder="🔍 Grant turi..." style={{ flex: 1, minWidth: 100, background: "#1a2340", border: "1px solid #334155", borderRadius: 8, padding: "8px 12px", color: "#fff", fontSize: 13, outline: "none" }} />
-          <input placeholder="📍 Davlat..." style={{ flex: 1, minWidth: 100, background: "#1a2340", border: "1px solid #334155", borderRadius: 8, padding: "8px 12px", color: "#fff", fontSize: 13, outline: "none" }} />
-          <select
-            value={activeFilter}
-            onChange={(e) => setActiveFilter(e.target.value)}
-            style={{ flex: 1, minWidth: 100, background: "#1a2340", border: "1px solid #334155", borderRadius: 8, padding: "8px 12px", color: "#94a3b8", fontSize: 13, outline: "none" }}
+        {/* Qidiruv qutisi */}
+        <div className="max-w-xl mx-auto flex gap-2 border-2 border-[#111111] p-1.5 sm:p-2 bg-[#f9f5ea] gazeta-shadow-black">
+          <input
+            type="text"
+            placeholder="Grant nomi yoki kalit so'z..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="flex-1 bg-transparent border-none outline-none text-xs font-serif min-w-0"
+          />
+          <button
+            onClick={() => setConsultModal(true)}
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#c1121f] text-white font-black text-[10px] sm:text-xs uppercase newspaper-mono hover:bg-[#111111] transition-colors cursor-pointer shrink-0"
           >
-            {filters.map((filter) => <option key={filter}>{filter}</option>)}
-          </select>
-          <button style={{
-            background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-            border: "none", borderRadius: 8, padding: "8px 20px",
-            color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
-          }}>🔎 Izlash</button>
-        </div>
-
-        <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginTop: 14 }}>
-          {filters.map(f => (
-            <button key={f} onClick={() => setActiveFilter(f)} style={{
-              background: activeFilter === f ? "#6366f122" : "transparent",
-              border: `1px solid ${activeFilter === f ? "#6366f1" : "#334155"}`,
-              color: activeFilter === f ? "#a78bfa" : "#64748b",
-              borderRadius: 20,
-              padding: "4px 14px",
-              fontSize: 12,
-              cursor: "pointer",
-            }}>{f}</button>
-          ))}
+            AI MASLAHAT
+          </button>
         </div>
       </header>
 
-      <main style={{ maxWidth: 900, margin: "0 auto", padding: "40px 16px" }}>
-        {/* Top Grants */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div>
-            <h2 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 4px" }}>Top Grantlar</h2>
-            <p style={{ color: "#64748b", fontSize: 13, margin: 0 }}>Hozirgi vaqtda taqdim etilayotgan eng yaxshi grantlar</p>
-          </div>
-          <span style={{ color: "#6366f1", fontSize: 13, fontWeight: 600 }}>Jami: {visibleGrants.length} ta grant</span>
+      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+        {/* Ro'yxat */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
+          {filtered.map((g, idx) => (
+            <GrantCard key={g.id || idx} grant={g} onDetails={setModal} idx={idx} />
+          ))}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16, marginBottom: 24 }}>
-          {grants.map(g => <GrantCard key={g.id} grant={g} onDetails={setModal} />)}
-
-          {/* AI Consult Card */}
-          <div style={{
-            background: "linear-gradient(135deg, #1a1a3e 0%, #0f0f2d 100%)",
-            borderRadius: 16, padding: 20,
-            border: "1px dashed #6366f166",
-            display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center",
-            textAlign: "center", gap: 10,
-          }}>
-            <div style={{ fontSize: 36 }}>🤖</div>
-            <h3 style={{ color: "#fff", fontSize: 15, fontWeight: 700, margin: 0 }}>O'zingizga mos grant topoldingizmi?</h3>
-            <p style={{ color: "#64748b", fontSize: 12, lineHeight: 1.6, margin: 0 }}>
-              Munosabatingizga qarab sizga eng mos grantni AI yordamida topamiz.
-            </p>
-            <button onClick={() => setConsultModal(true)} style={{
-              background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-              border: "none", borderRadius: 10, padding: "10px 20px",
-              color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
-            }}>Konsultatsiya Olish</button>
+        {/* Jarayon Bosqichlari */}
+        <section className="bg-[#ede3cc] border-4 border-[#111111] p-6 sm:p-8 gazeta-shadow-black mb-8">
+          <div className="text-center mb-6">
+            <span className="text-xs font-black uppercase text-[#c1121f] newspaper-mono">// YO'RIQNOMA</span>
+            <h2 className="text-2xl font-black uppercase newspaper-headline text-[#111111]">
+              GRANT YUTISHNING 4 ASOSIY QADAMI
+            </h2>
           </div>
-        </div>
-
-        {/* Process Steps */}
-        <section style={{ marginBottom: 40 }}>
-          <h2 style={{ textAlign: "center", fontSize: 22, fontWeight: 800, margin: "0 0 6px" }}>Grantga topshirish jarayoni</h2>
-          <p style={{ textAlign: "center", color: "#64748b", fontSize: 13, margin: "0 0 28px" }}>Oddiy 4 qadamda muvaffaqiyatga erishing</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
-            {STEPS.map((s, i) => (
-              <div key={s.num} style={{
-                background: "#111827",
-                borderRadius: 14,
-                padding: "20px 16px",
-                border: "1px solid #1e293b",
-                textAlign: "center",
-                position: "relative",
-              }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: "50%",
-                  background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 15, fontWeight: 800, margin: "0 auto 12px",
-                }}>{s.num}</div>
-                <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 700, margin: "0 0 6px" }}>{s.title}</h4>
-                <p style={{ color: "#64748b", fontSize: 12, lineHeight: 1.5, margin: 0 }}>{s.desc}</p>
-                {i < STEPS.length - 1 && (
-                  <div style={{
-                    position: "absolute", right: -8, top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "#334155", fontSize: 18, display: "none",
-                  }}>→</div>
-                )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {STEPS.map((s) => (
+              <div key={s.num} className="bg-[#f9f5ea] border-2 border-[#111111] p-4 text-center">
+                <div className="w-8 h-8 bg-[#111111] text-white font-black newspaper-mono flex items-center justify-center mx-auto mb-2 text-sm">
+                  {s.num}
+                </div>
+                <h4 className="font-black text-xs uppercase newspaper-headline mb-1 text-[#111111]">{s.title}</h4>
+                <p className="font-serif text-xs text-[#4b5563] leading-relaxed">{s.desc}</p>
               </div>
             ))}
           </div>
         </section>
-
-        <NewsletterAI />
       </main>
 
-      {/* Footer */}
-      <footer style={{
-        borderTop: "1px solid #1e293b",
-        padding: "24px 16px",
-        display: "flex",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: 16,
-        maxWidth: 900,
-        margin: "0 auto",
-      }}>
-        <div>
-          <div style={{ color: "#fff", fontWeight: 800, fontSize: 18, marginBottom: 4 }}>EduUZ</div>
-          <p style={{ color: "#64748b", fontSize: 12, margin: 0 }}>O'zbekistonning ilg'or ta'lim va muassasalari.</p>
-        </div>
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
-          {["About Us", "Privacy Policy", "Contact Support", "Terms of Service"].map(l => (
-            <a key={l} href="#" style={{ color: "#64748b", fontSize: 12, textDecoration: "none" }}>{l}</a>
-          ))}
-        </div>
-        <p style={{ color: "#334155", fontSize: 11, alignSelf: "center", margin: 0 }}>© 2026 EduUZ. Modernizing Uzbek Higher Education.</p>
-      </footer>
-
-      {/* Grant Detail + AI Modal */}
       {modal && <AIModal grant={modal} onClose={() => setModal(null)} />}
       {consultModal && <AIModal grant={null} onClose={() => setConsultModal(false)} />}
     </div>

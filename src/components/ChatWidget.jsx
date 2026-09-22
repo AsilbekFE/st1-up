@@ -3,10 +3,10 @@ import { askGemini } from "../ai/geminiService";
 import { findBestAnswer } from "../ai/chatEngine";
 
 const suggestions = [
-  "Eng yaxshi universitetlar reytingi",
-  "Stipendiyalar ro'yxati",
-  "Qabul jarayoni va talablar",
-  "Universitetlar to'lovlari",
+  "Top-5 universitetlar reytingi",
+  "100% grantlar ro'yxati va shartlari",
+  "DTM kirish ballari tahlili",
+  "Eng yuqori oylik to'lanadigan yo'nalishlar",
 ];
 
 export default function ChatWidget() {
@@ -14,7 +14,7 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState([
     {
       id: "welcome",
-      text: "Salom! 👋 EduUZ AI yordamchisiga xush kelibsiz! Men O'zbekiston universitetlari, yo'nalishlar, stipendiyalar, qabul jarayoni, to'lovlar va talaba hayoti haqida savollaringizga javob beraman.",
+      text: "Assalomu alaykum! Men EduUZ gazetasining virtual tahririyat muxbiriman. O'zbekiston oliy ta'limi, grantlar, kontrakt narxlari va qabul bo'yicha har qanday savolingizga javob beraman.",
       role: "bot",
     },
   ]);
@@ -76,41 +76,41 @@ export default function ChatWidget() {
     <>
       <div className={isOpen ? "fixed inset-0 z-50 flex flex-col" : "fixed bottom-6 right-6 z-50"}>
         {isOpen ? (
-          <div className="flex flex-col w-full h-full bg-[#0f172a] overflow-hidden animate-fade-in">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/80 bg-[#11192e]">
+          /* Ochiq chat oynasi */
+          <div className="flex flex-col w-full h-full bg-[#ede3cc] border-4 border-[#111111] animate-fade-in text-[#111111]">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-3 border-b-2 border-[#111111] bg-[#f4ecd8]">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-800/30">
-                  <svg className="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-                  </svg>
+                <div className="w-8 h-8 bg-[#c1121f] text-white flex items-center justify-center font-black newspaper-mono text-sm border border-[#111111]">
+                  AI
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">EduUZ AI</h3>
-                  <p className="text-[10px] text-emerald-400">Online</p>
+                  <h3 className="text-sm font-black newspaper-headline uppercase text-[#111111]">EduUZ Virtual Muxbiri</h3>
+                  <p className="text-[10px] newspaper-mono text-[#8b5a2b] font-bold">● Jonli tahririyat maslahati</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center w-7 h-7 border rounded-lg cursor-pointer bg-slate-900/80 border-slate-700 hover:border-slate-500 transition-colors"
+                className="w-7 h-7 border-2 border-[#111111] bg-[#ede3cc] flex items-center justify-center hover:bg-[#c1121f] hover:text-white transition-colors cursor-pointer"
                 aria-label="Chatni yopish"
               >
-                <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                ✕
               </button>
             </div>
 
-            <div ref={listRef} className="flex-1 overflow-y-auto scroll-smooth chat-scroll">
-              <div className="max-w-3xl mx-auto w-full p-4 space-y-3">
+            {/* Xabarlar ro'yxati */}
+            <div ref={listRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#f4ecd8]">
+              <div className="max-w-2xl mx-auto w-full space-y-3">
+                {/* Savol namunalari */}
                 {messages.length === 1 && (
-                  <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                     {suggestions.map((s) => (
                       <button
                         key={s}
                         onClick={() => handleSend(s)}
-                        className="px-3 py-2 text-[11px] font-medium text-left transition-all border rounded-xl text-slate-300 border-slate-800/80 bg-slate-900/40 hover:bg-slate-800/40 hover:border-slate-700"
+                        className="p-2.5 text-xs font-serif text-left border border-[#111111] bg-[#f9f5ea] text-[#111111] hover:bg-[#111111] hover:text-white transition-colors cursor-pointer"
                       >
-                        {s}
+                        ➔ {s}
                       </button>
                     ))}
                   </div>
@@ -119,12 +119,17 @@ export default function ChatWidget() {
                 {messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                     <div
-                      className={`max-w-[85%] px-4 py-2.5 text-sm leading-relaxed whitespace-pre-line ${
+                      className={`max-w-[85%] px-4 py-3 text-xs sm:text-sm leading-relaxed border-2 ${
                         msg.role === "user"
-                          ? "bg-gradient-to-r from-cyan-500 to-violet-500 text-white rounded-2xl rounded-br-md"
-                          : "bg-slate-900/60 border border-slate-800/60 text-slate-200 rounded-2xl rounded-bl-md"
+                          ? "bg-[#c1121f] text-white border-[#111111] gazeta-shadow-black font-serif"
+                          : "bg-[#f9f5ea] text-[#111111] border-[#111111] gazeta-shadow-wood font-serif"
                       }`}
                     >
+                      {msg.role === "bot" && (
+                        <span className="text-[10px] newspaper-mono text-[#8b5a2b] block mb-1 font-bold">
+                          [TAHRIRIYAT MASLAHATI]
+                        </span>
+                      )}
                       {msg.text}
                     </div>
                   </div>
@@ -132,52 +137,49 @@ export default function ChatWidget() {
 
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="px-4 py-3 text-sm bg-slate-900/60 border border-slate-800/60 rounded-2xl rounded-bl-md">
-                      <div className="flex gap-1">
-                        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                      </div>
+                    <div className="px-3 py-2 text-xs border border-[#111111] bg-[#f9f5ea] newspaper-mono text-[#8b5a2b]">
+                      ✍️ Tahririyat javob yozmoqda...
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="p-3 border-t border-slate-800/80 max-w-3xl mx-auto w-full">
-              <form
-                onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-                className="flex gap-2"
-              >
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Savolingizni yozing..."
-                  className="flex-1 px-4 py-2.5 text-sm text-white placeholder-slate-500 bg-slate-900/60 border border-slate-800/80 rounded-xl focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 transition-all"
-                />
-                <button
-                  type="submit"
-                  disabled={!input.trim() || isTyping}
-                  className="flex items-center justify-center w-11 h-11 transition-all bg-gradient-to-r from-cyan-400 to-violet-500 rounded-xl disabled:opacity-40 hover:from-cyan-300 hover:to-violet-400"
+            {/* Input qismi */}
+            <div className="border-t-2 border-[#111111] bg-[#ede3cc] p-3">
+              <div className="max-w-2xl mx-auto w-full">
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+                  className="flex gap-2"
                 >
-                  <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-                  </svg>
-                </button>
-              </form>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Savolingizni yozing..."
+                    className="flex-1 px-4 py-2.5 text-xs font-serif bg-[#f9f5ea] border-2 border-[#111111] outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!input.trim() || isTyping}
+                    className="px-5 py-2.5 bg-[#111111] text-white font-black text-xs uppercase newspaper-mono hover:bg-[#c1121f] transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    YUBORISH →
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         ) : (
+          /* Yopiq Floating Button (Gazeta muhri uslubida) */
           <button
             onClick={() => setIsOpen(true)}
-            className="flex items-center justify-center w-14 h-14 transition-all shadow-lg cursor-pointer bg-gradient-to-r from-cyan-400 to-violet-500 rounded-2xl hover:shadow-[0_0_30px_rgba(0,245,255,0.3)] hover:scale-105 animate-fade-in"
+            className="flex items-center gap-2 px-4 py-3 bg-[#c1121f] text-white font-black text-xs uppercase tracking-widest border-2 border-[#111111] gazeta-shadow-black hover:bg-[#111111] transition-all cursor-pointer newspaper-mono"
             aria-label="AI yordamchini ochish"
           >
-            <svg className="w-7 h-7 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-            </svg>
+            <span>🤖 AI MUXBIR</span>
+            <span className="w-2 h-2 rounded-full bg-white animate-ping"></span>
           </button>
         )}
       </div>

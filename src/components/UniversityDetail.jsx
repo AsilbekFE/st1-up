@@ -136,7 +136,7 @@ export default function UniversityDetail({ university, onClose }) {
     e.preventDefault();
     const token = localStorage.getItem("eduuz_token");
     if (!token) {
-      setApplyError("Ariza topshirish uchun avval tizimga kiring (Sign In).");
+      setApplyError("Ariza topshirish uchun avval tizimga kiring.");
       return;
     }
 
@@ -183,223 +183,158 @@ export default function UniversityDetail({ university, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 w-full h-full bg-[#0c1528] overflow-y-auto flex flex-col justify-between animate-fade-in">
-      <div className="relative w-full text-white bg-[#0c1528] flex-1 flex flex-col">
+    <div className="fixed inset-0 z-50 w-full h-full bg-[#f4ecd8] text-[#111111] overflow-y-auto flex flex-col justify-between">
+      <div className="relative w-full bg-[#f4ecd8] flex-1 flex flex-col">
 
-        {/* Floating Back Button */}
+        {/* Back Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 left-5 z-20 px-4 py-2 flex items-center gap-2 rounded-xl bg-slate-900/80 backdrop-blur border border-slate-700 hover:border-slate-400 transition-all cursor-pointer text-sm font-semibold text-slate-200"
+          className="absolute top-3 left-3 z-20 px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1.5 bg-[#f9f5ea] border-2 border-[#111111] gazeta-shadow-black hover:bg-[#c1121f] hover:text-white transition-all cursor-pointer text-[10px] sm:text-xs font-black uppercase newspaper-mono"
         >
-          <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Orqaga
+          ← ORQAGA
         </button>
 
         {/* Hero Banner */}
-        <div className="relative w-full h-80 md:h-[400px]">
-          {/* IMAGE JOYLASHTIRILGAN JOY: Universitet bosh rasmi */}
+        <div className="relative w-full h-64 sm:h-80 md:h-[380px] border-b-2 sm:border-b-4 border-[#111111] bg-[#ede3cc]">
           {university.image ? (
-            <img src={university.image} alt={university.name} className="w-full h-full object-cover" />
+            <img src={university.image} alt={university.name} className="w-full h-full object-cover filter sepia-[0.25] contrast-125" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-slate-900">
-              <span className="text-9xl font-black text-cyan-400/20">{university.initial}</span>
+            <div className="w-full h-full flex items-center justify-center bg-[#ede3cc]">
+              <span className="text-7xl sm:text-9xl font-black text-[#111111]/20 newspaper-title">{university.initial}</span>
             </div>
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#111111]/90 via-[#111111]/40 to-transparent" />
           <div className="absolute bottom-0 inset-x-0">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 pb-8">
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-[11px] font-extrabold uppercase px-3 py-1 rounded-lg bg-cyan-400 text-black tracking-wider shadow">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 pb-5 sm:pb-8">
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap mb-1.5 sm:mb-2">
+                <span className="text-[10px] sm:text-[11px] font-black uppercase px-2.5 py-0.5 sm:px-3 sm:py-1 bg-[#c1121f] text-white tracking-wider border border-[#111111] newspaper-mono">
                   {university.category} OTM
                 </span>
-                <span className="text-[11px] font-bold px-3 py-1 rounded-lg border border-cyan-700/60 bg-cyan-900/30 text-cyan-300">
+                <span className="text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 sm:px-3 sm:py-1 bg-[#111111] text-white newspaper-mono border border-white">
                   {university.rankLabel || university.badge}
                 </span>
               </div>
-              <h1 className="mt-3 text-4xl md:text-6xl font-black text-white drop-shadow-xl leading-tight">
-                {university.city}dagi {university.name}
+              <h1 className="text-xl sm:text-3xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight newspaper-headline">
+                {university.city}DAGI {university.name}
               </h1>
             </div>
           </div>
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto w-full px-6 md:px-12 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto w-full px-3 sm:px-6 md:px-12 py-6 sm:py-10">
 
           {/* LEFT: Main Info */}
-          <div className="lg:col-span-2 p-8 md:p-10 space-y-10 border-r border-slate-800/50">
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8 pr-0 lg:pr-8 border-b-2 lg:border-b-0 lg:border-r-2 border-[#111111] pb-6 sm:pb-8 lg:pb-0">
 
             {/* Stats Row */}
-            <div className="flex gap-6 flex-wrap">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 bg-[#ede3cc] border-2 border-[#111111] p-2.5 sm:p-4 gazeta-shadow-black">
               {[
-                { label: "Reyting", value: (university.rankLabel || university.badge).replace("@ ", "") },
-                { label: "Talabalar soni", value: detail.students },
-                { label: detail.country.includes("/") ? detail.country.split("/")[1] : detail.country, value: detail.country.split("/")[0] },
+                { label: "REYTING", value: (university.rankLabel || university.badge).replace("@ ", "") },
+                { label: "TALABALAR", value: detail.students },
+                { label: "STATUS", value: detail.country.split("/")[0] },
               ].map((s) => (
-                <div key={s.label} className="flex flex-col">
-                  <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider">{s.label}</span>
-                  <span className="mt-1 text-cyan-400 font-extrabold text-base">{s.value}</span>
+                <div key={s.label} className="text-center border-r last:border-r-0 border-[#111111]/30 px-1">
+                  <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-[#8b5a2b] newspaper-mono block">{s.label}</span>
+                  <span className="mt-0.5 sm:mt-1 text-[#111111] font-black text-xs sm:text-base newspaper-mono block truncate">{s.value}</span>
                 </div>
               ))}
             </div>
 
             {/* Akademik meros */}
-            <section>
-              <h2 className="flex items-center gap-2 text-xl font-bold text-white mb-4">
-                <span className="w-5 h-5 rounded-full bg-cyan-400 flex items-center justify-center text-black text-xs font-black">✦</span>
-                Akademik meros
+            <section className="bg-[#f9f5ea] border-2 border-[#111111] p-6 gazeta-shadow-wood">
+              <span className="gazeta-stamp-red mb-2 block w-fit">★ TARIX VA NAMOZ ★</span>
+              <h2 className="text-xl font-black uppercase tracking-tight text-[#111111] mb-3 newspaper-headline">
+                UNIVERSITETNING AKADEMIK NUFUSI
               </h2>
-              <p className="text-slate-400 text-sm leading-relaxed">{detail.legacy}</p>
-            </section>
-
-            {/* Akademik dasturlar */}
-            <section>
-              <h2 className="flex items-center gap-2 text-xl font-bold text-white mb-5">
-                <span className="w-5 h-5 rounded-full bg-cyan-400 flex items-center justify-center text-black text-xs font-black">✦</span>
-                Akademik dasturlar
-              </h2>
-              <div className="grid grid-cols-2 gap-2 md:gap-4">
-                {detail.programs.map((p) => (
-                  <div
-                    key={p.title}
-                    className="group flex flex-col gap-1.5 md:gap-2 p-3 md:p-5 rounded-xl md:rounded-2xl bg-[#111827] border border-slate-800/70 hover:border-cyan-700/50 transition-all"
-                  >
-                    <span className="text-lg md:text-2xl">{p.icon}</span>
-                    <h3 className="text-[11px] md:text-sm font-bold text-white leading-tight">{p.title}</h3>
-                    <p className="hidden md:block text-xs text-slate-500 leading-relaxed">{p.desc}</p>
-                    <button className="mt-auto pt-1 text-[10px] md:text-xs font-semibold text-cyan-400 border border-cyan-700/40 bg-cyan-900/20 rounded-lg px-3 py-1.5 self-start hover:bg-cyan-900/40 transition cursor-pointer">
-                      Batafsil →
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Kampus */}
-            <section>
-              <h2 className="flex items-center gap-2 text-xl font-bold text-white mb-5">
-                <span className="w-5 h-5 rounded-full bg-cyan-400 flex items-center justify-center text-black text-xs font-black">✦</span>
-                Kampus va innovatsiyalar
-              </h2>
-              {/* IMAGE JOYLASHTIRILGAN JOY: Kampus/innovatsiya rasmi */}
-              {university.image && (
-                <div className="rounded-2xl overflow-hidden h-40 mb-4">
-                  <img src={university.image} alt="Kampus" className="w-full h-full object-cover opacity-60" />
-                </div>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {detail.campus.map((c) => (
-                  <div key={c.title} className="flex gap-3 items-start p-4 rounded-xl bg-[#111827] border border-slate-800/60">
-                    <span className="text-xl">{c.icon}</span>
-                    <div>
-                      <p className="text-sm font-semibold text-white">{c.title}</p>
-                      <p className="text-xs text-slate-500 mt-1">{c.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* CTA Banner */}
-            <section className="rounded-xl md:rounded-2xl p-4 md:p-8 bg-[#0f1e42] border border-slate-800/60 text-center">
-              <h2 className="text-sm md:text-2xl font-black text-white mb-1.5 md:mb-2">{university.name}ga qo'shilishga tayyormisiz?</h2>
-              <p className="text-slate-400 text-[11px] md:text-sm max-w-lg mx-auto mb-3 md:mb-6 leading-relaxed">
-                Kelgusi yilga oid diplom va nazariy ismi biriktirilganda barcha zarur talablar yetarlicha qoniqarli jamki birlikda qimmatli qaror amalda ustivorlik bilan qoplanadi.
+              <p className="font-serif text-sm leading-relaxed text-[#374151] text-justify">
+                {detail.legacy}
               </p>
-              <div className="flex gap-2 md:gap-3 justify-center items-center">
-                <button
-                  onClick={() => setIsApplyOpen(true)}
-                  className="px-3 py-2 md:px-6 md:py-3 text-[11px] md:text-sm font-bold text-black bg-cyan-400 rounded-lg md:rounded-xl hover:bg-cyan-300 transition cursor-pointer whitespace-nowrap"
-                >
-                  Onlayn ariza topshirish
-                </button>
-                <button
-                  onClick={onClose}
-                  className="px-3 py-2 md:px-6 md:py-3 text-[11px] md:text-sm font-bold text-slate-300 bg-[#1a2340] border border-slate-700 rounded-lg md:rounded-xl hover:border-slate-500 transition cursor-pointer whitespace-nowrap"
-                >
-                  Orqaga
-                </button>
+            </section>
+
+            {/* Ta'lim Dasturlari */}
+            <section>
+              <div className="flex items-center gap-2 border-b-2 border-[#111111] pb-2 mb-4">
+                <span className="text-[#c1121f]">■</span>
+                <h2 className="text-lg font-black uppercase tracking-tight text-[#111111] newspaper-headline">
+                  ASOSIY MUTAXASSISLIKLAR VA FAKULTETLAR
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {detail.programs.map((p, idx) => {
+                  const isRed = idx % 2 === 0;
+                  return (
+                    <div key={p.title} className={`p-4 bg-[#f9f5ea] border-2 ${isRed ? "border-[#c1121f]" : "border-[#111111]"} gazeta-shadow-black`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xl">{p.icon}</span>
+                        <h4 className="font-black text-sm uppercase newspaper-headline text-[#111111]">{p.title}</h4>
+                      </div>
+                      <p className="font-serif text-xs text-[#4b5563] leading-relaxed">{p.desc}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Kampus Sharoitlari */}
+            <section>
+              <div className="flex items-center gap-2 border-b-2 border-[#111111] pb-2 mb-4">
+                <span className="text-[#8b5a2b]">■</span>
+                <h2 className="text-lg font-black uppercase tracking-tight text-[#111111] newspaper-headline">
+                  KAMPUS VA TALABALAR HAYOTI
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {detail.campus.map((c) => (
+                  <div key={c.title} className="p-4 bg-[#ede3cc] border-2 border-[#111111]">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">{c.icon}</span>
+                      <h4 className="font-black text-sm uppercase newspaper-headline text-[#111111]">{c.title}</h4>
+                    </div>
+                    <p className="font-serif text-xs text-[#4b5563] leading-relaxed">{c.desc}</p>
+                  </div>
+                ))}
               </div>
             </section>
           </div>
 
-          {/* RIGHT: Sidebar */}
-          <div className="p-8 space-y-6">
-            <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">Asosiy ma'lumotlar</h3>
+          {/* RIGHT: Kontakt va Ariza */}
+          <div className="space-y-6">
+            <div className="bg-[#ede3cc] border-4 border-[#111111] p-6 gazeta-shadow-black">
+              <span className="text-[10px] font-black uppercase text-[#c1121f] newspaper-mono block mb-1">
+                ★ RASMIY ALOQA BOG'LAMASI ★
+              </span>
+              <h3 className="font-black uppercase newspaper-headline text-lg mb-4 text-[#111111]">
+                QABUL KOMISSIYASI
+              </h3>
 
-            <div className="space-y-4 text-sm">
-              {[
-                {
-                  icon: (
-                    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  ),
-                  label: "Manzil", value: detail.address,
-                },
-                {
-                  icon: (
-                    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                  ),
-                  label: "Telefon", value: detail.phone,
-                },
-                {
-                  icon: (
-                    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  ),
-                  label: "Email", value: detail.email,
-                },
-                {
-                  icon: (
-                    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  ),
-                  label: "Tashkil etilgan", value: detail.founded,
-                },
-              ].map((item) => (
-                <div key={item.label} className="flex gap-3 items-start">
-                  <div className="mt-0.5 flex-shrink-0">{item.icon}</div>
-                  <div>
-                    <p className="text-slate-500 text-xs">{item.label}</p>
-                    <p className="text-slate-200 font-medium mt-0.5">{item.value}</p>
-                  </div>
+              <div className="space-y-3 font-serif text-xs text-[#374151]">
+                <div className="border-b border-[#111111]/20 pb-2">
+                  <span className="font-black newspaper-mono text-[#8b5a2b] block mb-0.5">MANZIL:</span>
+                  <span>{detail.address}</span>
                 </div>
-              ))}
-            </div>
-
-            <div className="pt-4 space-y-3">
-              <h3 className="text-base font-bold text-white border-b border-slate-800 pb-3">Hujjat topshirish</h3>
-              <div className="space-y-2 text-xs text-slate-400">
-                <div className="flex items-start gap-2">
-                  <span className="text-cyan-400 mt-0.5">✔</span>
-                  <span>Pasport yoki ID karta nusxasi talab etiladi.</span>
+                <div className="border-b border-[#111111]/20 pb-2">
+                  <span className="font-black newspaper-mono text-[#8b5a2b] block mb-0.5">TELEFON:</span>
+                  <a href={`tel:${detail.phone}`} className="underline font-bold text-[#111111]">{detail.phone}</a>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-cyan-400 mt-0.5">✔</span>
-                  <span>Maktab attestati yoki kollej diplomi.</span>
+                <div className="border-b border-[#111111]/20 pb-2">
+                  <span className="font-black newspaper-mono text-[#8b5a2b] block mb-0.5">ELEKTRON POCHTA:</span>
+                  <a href={`mailto:${detail.email}`} className="underline text-[#c1121f]">{detail.email}</a>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-cyan-400 mt-0.5">✔</span>
-                  <span>3×4 formatidagi 6 ta rasm.</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-cyan-400 mt-0.5">✔</span>
-                  <span>Tibbiy ma'lumotnoma (086 shakli).</span>
+                <div>
+                  <span className="font-black newspaper-mono text-[#8b5a2b] block mb-0.5">ASOS SOLINGAN:</span>
+                  <span>{detail.founded}-yil</span>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsApplyOpen(true)}
-                className="w-full py-3.5 mt-3 font-extrabold text-black bg-cyan-400 rounded-xl hover:bg-cyan-300 transition cursor-pointer text-sm"
+                className="w-full py-3.5 mt-6 font-black uppercase tracking-widest text-xs bg-[#c1121f] text-white border-2 border-[#111111] gazeta-shadow-black hover:bg-[#111111] transition-all cursor-pointer newspaper-mono"
               >
-                Hujjat topshirish →
+                HUJJAT TOPSHIRISH (ARIZA) →
               </button>
 
               {detail.website !== "#" && (
@@ -407,9 +342,9 @@ export default function UniversityDetail({ university, onClose }) {
                   href={detail.website}
                   target="_blank"
                   rel="noreferrer"
-                  className="block text-center text-xs text-cyan-400 hover:text-cyan-300 transition mt-2"
+                  className="block text-center text-xs newspaper-mono text-[#8b5a2b] hover:text-[#c1121f] transition mt-3 underline"
                 >
-                  🔗 {detail.website}
+                  🌐 Rasmiy Veb-Sayt: {detail.website}
                 </a>
               )}
             </div>
@@ -417,94 +352,101 @@ export default function UniversityDetail({ university, onClose }) {
         </div>
       </div>
 
-      {/* Online Ariza topshirish Modali */}
+      {/* Online Ariza Modali (Gazeta Anketasi Uslubida) */}
       {isApplyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-lg bg-[#0f172a] border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#111111]/70 backdrop-blur-xs" onClick={() => setIsApplyOpen(false)}>
+          <div
+            className="relative w-full max-w-lg bg-[#ede3cc] border-4 border-[#111111] p-6 md:p-8 text-[#111111] gazeta-shadow-black"
+            style={{ maxHeight: "90vh", overflowY: "auto" }}
+            onClick={e => e.stopPropagation()}
+          >
             <button
               onClick={() => setIsApplyOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800"
+              className="absolute top-4 right-4 font-black w-8 h-8 flex items-center justify-center border-2 border-[#111111] bg-[#f9f5ea] hover:bg-[#c1121f] hover:text-white transition-colors cursor-pointer"
             >
               ✕
             </button>
 
-            <h3 className="text-xl font-bold mb-1 text-cyan-400">
-              {university.name}ga Ariza Topshirish
+            <span className="text-[10px] font-black uppercase text-[#c1121f] newspaper-mono block mb-1">
+              ★ RASMIY ANKETA BLANKASI ★
+            </span>
+            <h3 className="text-lg font-black uppercase newspaper-headline mb-1 text-[#111111]">
+              {university.name}GA ARIZA TOPSHIRISH
             </h3>
-            <p className="text-xs text-slate-400 mb-6">
-              Ma'lumotlaringizni to'ldiring, universitet qabul komissiyasi arizangizni ko'rib chiqadi.
+            <p className="font-serif text-xs text-[#4b5563] mb-6">
+              Arizangiz to'g'ridan-to'g'ri OTM qabul bo'limiga ro'yxatga kiritiladi.
             </p>
 
             {applySuccess ? (
-              <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-center py-8">
-                <p className="text-2xl mb-2">🎉</p>
-                <p className="font-bold text-base">Arizangiz muvaffaqiyatli qabul qilindi!</p>
-                <p className="text-xs mt-1 text-slate-300">Tez orada siz bilan bog'lanamiz.</p>
+              <div className="p-6 border-2 border-[#111111] bg-[#f9f5ea] text-center">
+                <p className="text-3xl mb-2">🎉</p>
+                <p className="font-black text-base uppercase newspaper-headline text-[#111111]">ARIZANGIZ RASMAN QABUL QILINDI!</p>
+                <p className="font-serif text-xs mt-1 text-[#4b5563]">Qabul hay'ati siz bilan tez orada bog'lanadi.</p>
               </div>
             ) : (
               <form onSubmit={handleApplySubmit} className="space-y-4">
                 {applyError && (
-                  <div className="p-3 text-xs rounded-xl bg-red-500/20 border border-red-500/40 text-red-300">
+                  <div className="p-3 text-xs border-2 border-[#c1121f] bg-[#c1121f]/10 newspaper-mono text-[#c1121f]">
                     {applyError}
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">To'liq ismingiz</label>
+                  <label className="block text-xs font-black uppercase newspaper-mono mb-1 text-[#4b5563]">TO'LIQ ISMINGIZ</label>
                   <input
                     type="text"
                     required
                     value={applyForm.fullName}
                     onChange={(e) => setApplyForm({ ...applyForm, fullName: e.target.value })}
                     placeholder="Ism Familiya"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3 py-2 text-xs"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Telefon raqam</label>
+                    <label className="block text-xs font-black uppercase newspaper-mono mb-1 text-[#4b5563]">TELEFON RAQAM</label>
                     <input
                       type="tel"
                       required
                       value={applyForm.phone}
                       onChange={(e) => setApplyForm({ ...applyForm, phone: e.target.value })}
                       placeholder="+998 90 123 45 67"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                      className="w-full px-3 py-2 text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Email manzil</label>
+                    <label className="block text-xs font-black uppercase newspaper-mono mb-1 text-[#4b5563]">EMAIL MANZIL</label>
                     <input
                       type="email"
                       required
                       value={applyForm.email}
                       onChange={(e) => setApplyForm({ ...applyForm, email: e.target.value })}
                       placeholder="nomi@email.uz"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                      className="w-full px-3 py-2 text-xs"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Tanlangan fakultet / yo'nalish</label>
+                  <label className="block text-xs font-black uppercase newspaper-mono mb-1 text-[#4b5563]">FAKULTET / YO'NALISH</label>
                   <input
                     type="text"
                     value={applyForm.programName}
                     onChange={(e) => setApplyForm({ ...applyForm, programName: e.target.value })}
                     placeholder="Masalan: Dasturiy ta'minot"
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3 py-2 text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Qo'shimcha izoh / DTM bali / Sertifikatlar</label>
+                  <label className="block text-xs font-black uppercase newspaper-mono mb-1 text-[#4b5563]">QO'SHIMCHA MA'LUMOT / DTM BALI</label>
                   <textarea
                     rows={2}
                     value={applyForm.notes}
                     onChange={(e) => setApplyForm({ ...applyForm, notes: e.target.value })}
-                    placeholder="IELTS bali, DTM ballari yoki boshqa savollar..."
-                    className="w-full px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-cyan-400"
+                    placeholder="IELTS yoki DTM ballari haqida qisqa izoh..."
+                    className="w-full px-3 py-2 text-xs"
                   />
                 </div>
 
@@ -512,16 +454,16 @@ export default function UniversityDetail({ university, onClose }) {
                   <button
                     type="button"
                     onClick={() => setIsApplyOpen(false)}
-                    className="w-1/2 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-sm font-semibold transition"
+                    className="w-1/2 py-2.5 border-2 border-[#111111] bg-[#f9f5ea] text-xs font-black uppercase newspaper-mono hover:bg-[#111111] hover:text-white transition-colors cursor-pointer"
                   >
-                    Bekor qilish
+                    BEKOR QILISH
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-1/2 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-bold text-sm transition disabled:opacity-50"
+                    className="w-1/2 py-2.5 bg-[#c1121f] text-white border-2 border-[#111111] font-black text-xs uppercase newspaper-mono hover:bg-[#111111] transition-colors disabled:opacity-50 cursor-pointer gazeta-shadow-black"
                   >
-                    {isSubmitting ? "Yuborilmoqda..." : "Yuborish"}
+                    {isSubmitting ? "YUBORILMOQDA..." : "ARIZANI JO'NATISH →"}
                   </button>
                 </div>
               </form>

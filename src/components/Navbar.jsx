@@ -1,35 +1,25 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import SignInModal from "./SignInModal";
 
 const links = [
   { to: "/universities", label: "Universitetlar" },
-  { to: "/scholarships", label: "Grantlar" },
-  { to: "/majors", label: "Ta'lim yo'nalishlari" },
-  { to: "/admissions", label: "Qabul" },
-  { to: "/statistics", label: "Statistika" },
+  { to: "/scholarships", label: "Grantlar & Stipendiyalar" },
+  { to: "/majors", label: "Ta'lim Yo'nalishlari" },
+  { to: "/admissions", label: "Qabul Jarayoni" },
+  { to: "/statistics", label: "Milliy Statistika" },
 ];
 
-const linkClass = ({ isActive }) =>
-  `block py-2 md:py-0 md:pb-2 border-b-2 transition-colors ${
-    isActive
-      ? "border-[#e8e2d8] text-[#f4f1ea]"
-      : "border-transparent text-[#c9c3b9] hover:text-[#f4f1ea] hover:border-[#77736d]"
-  }`;
-
-export default function Navbar() {
+export default function Navbar({ onRequireAuth }) {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
 
   const checkUser = () => {
     try {
       const stored = localStorage.getItem("eduuz_user");
-      if (stored) {
-        setCurrentUser(JSON.parse(stored));
-      } else {
-        setCurrentUser(null);
-      }
+      setCurrentUser(stored ? JSON.parse(stored) : null);
     } catch {
       setCurrentUser(null);
     }
@@ -51,167 +41,168 @@ export default function Navbar() {
     localStorage.removeItem("eduuz_user");
     setCurrentUser(null);
     window.dispatchEvent(new Event("eduuz_auth_changed"));
+    navigate("/");
   };
 
-  const openSignIn = () => setIsSignInOpen(true);
-  const closeSignIn = () => setIsSignInOpen(false);
+  const handleNavLinkClick = () => {
+    setMenuOpen(false);
+  };
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 border-b border-[#f4f1ea]/10 bg-[#111111]/80 text-[#f4f1ea] shadow-[0_10px_40px_rgba(0,0,0,0.2)] backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex items-center justify-between h-16">
-            <NavLink to="/" className="text-[#f4f1ea] font-black text-2xl tracking-wide shrink-0">
-              EduUZ
-            </NavLink>
-
-            <ul className="hidden md:flex items-center gap-7 text-sm font-medium">
-              {links.map((l) => (
-                <li key={l.to}>
-                  <NavLink to={l.to} className={linkClass} onClick={() => setMenuOpen(false)}>
-                    {l.label}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-
-            <div className="flex items-center gap-3">
-              {currentUser ? (
-                <div className="hidden md:flex items-center gap-3">
-                  <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/20">
-                    <div className="w-7 h-7 rounded-full bg-[#ad8eff] text-black font-bold flex items-center justify-center text-xs">
-                      {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "U"}
-                    </div>
-                    <span className="text-sm font-medium text-white max-w-[120px] truncate">{currentUser.name}</span>
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="bg-red-500/20 text-red-300 border border-red-500/40 px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer hover:bg-red-500/30 transition-all"
-                  >
-                    Chiqish
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setIsSignInOpen(true)}
-                  className="hidden md:block bg-[#ad8eff] px-5 py-2 rounded-full text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
-                >
-                  Sign In
-                </button>
-              )}
-
-              <button
-                onClick={() => setMenuOpen((o) => !o)}
-                className="md:hidden flex flex-col justify-center items-center w-9 h-9 rounded-xl border border-[#f4f1ea]/15 bg-[#1b1b1b]/80 gap-1.5 cursor-pointer hover:border-[#f4f1ea]/30 transition"
-                aria-label="Menyu"
-                aria-expanded={menuOpen}
-              >
-                <span
-                  className={`block w-5 h-0.5 bg-[#e4ded4] transition-all duration-300 origin-center ${
-                    menuOpen ? "rotate-45 translate-y-2" : ""
-                  }`}
-                />
-                <span
-                  className={`block w-5 h-0.5 bg-[#e4ded4] transition-all duration-300 ${
-                    menuOpen ? "opacity-0" : ""
-                  }`}
-                />
-                <span
-                  className={`block w-5 h-0.5 bg-[#e4ded4] transition-all duration-300 origin-center ${
-                    menuOpen ? "-rotate-45 -translate-y-2" : ""
-                  }`}
-                />
-              </button>
-            </div>
+      <header className="w-full bg-[#f4ecd8] border-b-4 border-[#111111] text-[#111111] z-40 relative">
+        {/* Yuqori Gazeta Tasmachasi (Dateline) */}
+        <div className="border-b border-[#111111] px-4 py-1.5 text-[11px] font-bold tracking-widest uppercase newspaper-mono flex flex-wrap items-center justify-between bg-[#ede3cc] text-[#4b5563]">
+          <div className="flex items-center gap-3">
+            <span>📍 Toshkent, O'zbekiston</span>
+            <span className="hidden sm:inline">|</span>
+            <span className="hidden sm:inline">📅 2026-yil, Sentyabr</span>
+            <span className="hidden md:inline">|</span>
+            <span className="hidden md:inline">🌤️ Havo: +24°C, Ochiq</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[#c1121f] font-black">NASHIR: № 284</span>
+            <span>|</span>
+            <span>TARQATISH: BEPUL</span>
           </div>
         </div>
-      </nav>
 
-      <div
-        className={`md:hidden fixed inset-0 z-50 ${
-          menuOpen ? "" : "pointer-events-none"
-        }`}
-      >
-        <div
-          className={`absolute inset-0 bg-[#080808]/70 backdrop-blur-sm transition-opacity duration-300 ${
-            menuOpen ? "opacity-100" : "opacity-0"
-          }`}
-          onClick={() => setMenuOpen(false)}
-        />
+        {/* Asosiy Gazeta Masthead (Sarlavhasi) */}
+        <div className="max-w-7xl mx-auto px-3 py-3 md:py-6 flex flex-row items-center justify-between gap-2 md:gap-4 border-b-2 border-[#111111]">
+          {/* Chap shtamp - QIZIL (Faqat katta ekranda) */}
+          <div className="hidden lg:flex flex-col items-center">
+            <span className="gazeta-stamp-red">
+              ★ RASMIY NASHR ★
+            </span>
+            <span className="text-[10px] uppercase font-bold tracking-widest mt-1 text-[#5c3d2e] newspaper-mono">
+              Oliy Ta'lim Axborotnomasi
+            </span>
+          </div>
 
-        <aside
-          className={`absolute top-0 right-0 h-full w-72 max-w-[85%] bg-[#161616] border-l border-[#f4f1ea]/10 shadow-2xl shadow-black/50 transition-transform duration-300 ease-out ${
-            menuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#f4f1ea]/10">
-            <span className="text-lg font-bold text-[#f4f1ea]">Menyu</span>
+          {/* Markaziy Gazeta Nomi */}
+          <div className="text-left md:text-center flex-1">
+            <NavLink to="/" className="inline-block group">
+              <h1 className="text-2xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-[#111111] uppercase newspaper-title transition-transform group-hover:scale-[1.01] leading-none">
+                EDUUZ <span className="text-[#c1121f]">XABARCHISI</span>
+              </h1>
+            </NavLink>
+            <p className="hidden sm:block text-[11px] md:text-xs font-serif italic text-[#4b5563] mt-1 tracking-wide">
+              "Kelajak yo'lingizni ilm va to'g'ri tanlov bilan yoriting" — O'zbekiston OTMlari yagona portali
+            </p>
+          </div>
+
+          {/* O'ng taraf - Tugmalar */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden lg:flex flex-col items-end">
+              <span className="gazeta-stamp-black">
+                № 1 TALABA QO'LLANMASI
+              </span>
+              <span className="text-[10px] uppercase font-bold tracking-widest mt-1 text-[#8b5a2b] newspaper-mono">
+                Akademik Reytinglar
+              </span>
+            </div>
+
+            {currentUser ? (
+              <div className="flex items-center gap-1.5 border-2 border-[#111111] bg-[#f9f5ea] p-1 gazeta-shadow-black">
+                <div className="w-6 h-6 bg-[#c1121f] text-white font-black flex items-center justify-center text-[10px] newspaper-mono">
+                  {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "U"}
+                </div>
+                <div className="hidden sm:block text-left px-1">
+                  <p className="text-[11px] font-black truncate max-w-[80px]">{currentUser.name}</p>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="px-2 py-1 bg-[#111111] text-white text-[9px] font-black uppercase hover:bg-[#c1121f] transition-colors cursor-pointer"
+                >
+                  Chiqish
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsSignInOpen(true)}
+                className="px-2.5 py-2 sm:px-4 sm:py-2 bg-[#c1121f] text-white font-black text-[10px] sm:text-xs uppercase tracking-wider border-2 border-[#111111] gazeta-shadow-black hover:bg-[#111111] hover:text-white transition-all cursor-pointer newspaper-mono"
+              >
+                KIRISH
+              </button>
+            )}
+
+            {/* Mobil Menyu Tugmasi */}
             <button
-              onClick={() => setMenuOpen(false)}
-              aria-label="Yopish"
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#f4f1ea]/15 bg-[#202020] cursor-pointer hover:border-[#f4f1ea]/30 transition"
+              onClick={() => setMenuOpen((o) => !o)}
+              className="md:hidden p-1.5 border-2 border-[#111111] bg-[#ede3cc] text-[#111111] cursor-pointer"
+              aria-label="Gazeta Menyu"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-[#d7d2c8]">
-                <path d="M18 6L6 18M6 6l12 12" />
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                {menuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                )}
               </svg>
             </button>
           </div>
+        </div>
 
-          <ul className="flex flex-col px-6 py-4 gap-1">
-            {links.map((l) => (
-              <li key={l.to}>
+        {/* Gazeta Navigatsiya Chizig'i (Klassik bo'limlar) */}
+        <nav className="hidden md:block max-w-7xl mx-auto px-4 py-2">
+          <ul className="flex items-center justify-between text-xs font-black uppercase tracking-widest newspaper-mono divide-x-2 divide-[#111111]">
+            <li className="px-3 first:pl-0">
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `hover:text-[#c1121f] transition-colors ${isActive ? "text-[#c1121f] underline decoration-2 underline-offset-4 font-black" : "text-[#111111]"}`
+                }
+              >
+                📰 Bosh Sahifa
+              </NavLink>
+            </li>
+            {links.map((link) => (
+              <li key={link.to} className="px-4">
                 <NavLink
-                  to={l.to}
+                  to={link.to}
+                  onClick={(e) => handleNavLinkClick(e, link.to)}
                   className={({ isActive }) =>
-                    `block py-3 text-sm font-medium rounded-xl px-3 transition-colors ${
-                      isActive
-                        ? "bg-[#f4f1ea]/15 text-[#f4f1ea]"
-                        : "text-[#c9c3b9] hover:text-[#f4f1ea] hover:bg-[#f4f1ea]/10"
-                    }`
+                    `hover:text-[#c1121f] transition-colors ${isActive ? "text-[#c1121f] underline decoration-2 underline-offset-4 font-black" : "text-[#111111]"}`
                   }
-                  onClick={() => setMenuOpen(false)}
                 >
-                  {l.label}
+                  {link.label}
                 </NavLink>
               </li>
             ))}
-            <li className="pt-4">
-              {currentUser ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-900 border border-slate-800">
-                    <div className="w-8 h-8 rounded-full bg-[#ad8eff] text-black font-bold flex items-center justify-center text-sm">
-                      {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "U"}
-                    </div>
-                    <div className="truncate">
-                      <p className="text-sm font-semibold text-white">{currentUser.name}</p>
-                      <p className="text-xs text-slate-400 truncate">{currentUser.email}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => { handleLogout(); setMenuOpen(false); }}
-                    className="w-full bg-red-500/20 text-red-300 border border-red-500/40 py-2.5 rounded-full text-sm font-semibold cursor-pointer hover:bg-red-500/30 transition-opacity"
-                  >
-                    Chiqish
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => { setIsSignInOpen(true); setMenuOpen(false); }}
-                  className="w-full bg-[#ad8eff] py-2.5 rounded-full text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
-                >
-                  Sign In
-                </button>
-              )}
+            <li className="px-3 last:pr-0">
+              <span className="text-[#8b5a2b] font-bold">★ 2026-QABUL</span>
             </li>
           </ul>
-        </aside>
-      </div>
+        </nav>
 
+        {/* Mobil Menyu Ochilganda */}
+        {menuOpen && (
+          <div className="md:hidden border-t-2 border-[#111111] bg-[#ede3cc] px-5 py-4 space-y-3">
+            <p className="text-xs font-black uppercase text-[#4b5563] newspaper-mono">// GAZETA BO'LIMLARI</p>
+            <NavLink
+              to="/"
+              onClick={() => setMenuOpen(false)}
+              className="block py-2 font-black text-sm border-b border-[#111111]/20 hover:text-[#c1121f]"
+            >
+              📰 Bosh Sahifa
+            </NavLink>
+            {links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
+                className="block py-2 font-black text-sm border-b border-[#111111]/20 hover:text-[#c1121f]"
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
+        )}
+      </header>
+
+      {/* SignIn Modal */}
       {isSignInOpen && (
-        <SignInModal
-          isOpen={isSignInOpen}
-          onClose={closeSignIn}
-        />
+        <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
       )}
     </>
   );

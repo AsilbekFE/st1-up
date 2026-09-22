@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 import prisma from "../config/prisma.js";
 
 const generateToken = (id) => {
@@ -76,10 +77,7 @@ export const register = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: "Muvaffaqiyatli ro'yxatdan o'tdingiz!",
-      data: {
-        user,
-        token,
-      },
+      data: { user, token },
     });
   } catch (error) {
     next(error);
@@ -108,6 +106,14 @@ export const login = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: "Email yoki parol noto'g'ri.",
+      });
+    }
+
+    // Google OAuth orqali ro'yxatdan o'tgan foydalanuvchi parol bilan kira olmaydi
+    if (!user.password) {
+      return res.status(401).json({
+        success: false,
+        message: "Bu hisob Google orqali yaratilgan. Iltimos, Google bilan kiring.",
       });
     }
 
@@ -172,5 +178,83 @@ export const getMe = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+// @desc    Google OAuth login / register
+// @route   POST /api/auth/google
+// @access  Public
+export const googleLogin = async (req, res, next) => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({
+        success: false,
+        message: "Google token topilmadi.",
+      });
+    }
+
+    const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    if (!GOOGLE_CLIENT_ID) {
+      return res.status(501).json({
+        success: false,
+        message: "Google login hozircha sozlanmagan. Iltimos, email bilan kiring.",
+      });
+    }
+
+    const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, picture, sub: googleId } = payload;
+
+    // Foydalanuvchini topish yoki yaratish
+    let user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name: name || email.split("@")[0],
+          email: email.toLowerCase(),
+          password: await bcrypt.hash(googleId + "google_oauth_secret", 10),
+          avatar: picture || null,
+          role: "USER",
+        },
+      });
+    } else if (picture && !user.avatar) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { avatar: picture },
+      });
+    }
+
+    const token = generateToken(user.id);
+
+    res.json({
+      success: true,
+      message: "Google orqali muvaffaqiyatli kirdingiz!",
+      data: {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+        },
+        token,
+      },
+    });
+  } catch (error) {
+    console.error("Google OAuth error:", error.message);
+    res.status(401).json({
+      success: false,
+      message: "Google orqali kirishda xatolik. Iltimos, email bilan kiring.",
+    });
   }
 };

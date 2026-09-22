@@ -16,184 +16,70 @@ function useIsMobile() {
 }
 
 const YONALISHLAR = [
-  {
-    id: 1,
-    icon: "🤖",
-    badge: "Top",
-    badgeColor: "#00e5a0",
-    title: "Sun'iy Intellekt",
-    desc: "Mashina o'rganish, neyron tarmoqlar va ma'lumotlarni tahlil qilish chuqur o'rganish.",
-    stipendiya: "$1,500+",
-    universitetlar: 12,
-    accent: "#6366f1",
-  },
-  {
-    id: 2,
-    icon: "🛡️",
-    badge: "Yangi",
-    badgeColor: "#f59e0b",
-    title: "Kibxavfsizlik",
-    desc: "Raqamli biznes tizimlari va axborot xavfsizligi strategiyalarini o'rganing.",
-    stipendiya: "$1,000+",
-    universitetlar: 8,
-    accent: "#8b5cf6",
-  },
-  {
-    id: 3,
-    icon: "💼",
-    badge: "Mashhur",
-    badgeColor: "#60a5fa",
-    title: "Biznes Boshqaruvi",
-    desc: "Zamonaviy menejment, marketing va moliya-boshqaruvni o'rganish.",
-    stipendiya: "$800+",
-    universitetlar: 45,
-    accent: "#06b6d4",
-  },
-  {
-    id: 4,
-    icon: "🏥",
-    badge: null,
-    badgeColor: null,
-    title: "Pediatriya",
-    desc: "Bolalar salomatligi va rivojlanishiga e'tibor qaratuvchi fundamental tibbiyot yo'nalishi.",
-    stipendiya: "$600+",
-    universitetlar: 15,
-    accent: "#ec4899",
-  },
-  {
-    id: 5,
-    icon: "🏗️",
-    badge: null,
-    badgeColor: null,
-    title: "Arxitektura",
-    desc: "Zamonaviy shahar dizayni va insoniy qurilish tizimlarini loyihalash.",
-    stipendiya: "$750+",
-    universitetlar: 10,
-    accent: "#f97316",
-  },
-  {
-    id: 6,
-    icon: "🦾",
-    badge: "Yangi",
-    badgeColor: "#00e5a0",
-    title: "Robototexnika",
-    desc: "Avtomatlashtirilgan tizimlar va texnologik innovatsiyalar sohasida ta'lim.",
-    stipendiya: "$1,100+",
-    universitetlar: 5,
-    accent: "#10b981",
-  },
-  {
-    id: 7,
-    icon: "🎮",
-    badge: "Top",
-    badgeColor: "#f59e0b",
-    title: "Game Dizayn",
-    desc: "Kompyuter o'yinlari grafika, 3D modellashtirilish va vizual effektlar.",
-    stipendiya: "$1,500+",
-    universitetlar: 3,
-    accent: "#a855f7",
-  },
-  {
-    id: 8,
-    icon: "📊",
-    badge: null,
-    badgeColor: null,
-    title: "Data Science",
-    desc: "Katta hajmdagi ma'lumotlarni tahlil qilish va prognoz modellar yaratish.",
-    stipendiya: "$1,300+",
-    universitetlar: 10,
-    accent: "#3b82f6",
-  },
+  { id: 1, icon: "🤖", badge: "Top Kasb", title: "Sun'iy Intellekt va Data", desc: "Mashina o'rganish, neyron tarmoqlar va katta ma'lumotlar tahlili mutaxassislari.", stipendiya: "$1,500+", universitetlar: 12 },
+  { id: 2, icon: "🛡️", badge: "Yangi", title: "Kiberxavfsizlik", desc: "Bank, biznes va davlat axborot infratuzilmasini himoya qilish tizimlari.", stipendiya: "$1,200+", universitetlar: 8 },
+  { id: 3, icon: "💼", badge: "Ommabop", title: "Biznes Boshqaruvi (BBA)", desc: "Zamonaviy korporativ menejment, marketing, investitsiya va moliyaviy audit.", stipendiya: "$900+", universitetlar: 45 },
+  { id: 4, icon: "🏥", badge: "Amaliy", title: "Davolash va Pediatriya", desc: "Inson salomatligi, ilg'or jarrohlik texnologiyalari va klinik biotibbiyot.", stipendiya: "$700+", universitetlar: 15 },
+  { id: 5, icon: "🏗️", badge: "Nufuzli", title: "Arxitektura va Shaharsozlik", desc: "Bino va inshootlar loyihalash, zamonaviy shahar urbanistikasi va dizayn.", stipendiya: "$850+", universitetlar: 10 },
+  { id: 6, icon: "🦾", badge: "Kelajak", title: "Robototexnika va Mexatronika", desc: "Sanoat avtomatizatsiyasi, sensor tizimlar va robotik mexanizmlar.", stipendiya: "$1,100+", universitetlar: 5 },
+  { id: 7, icon: "🎮", badge: "Ijodiy", title: "Game Dizayn va 3D Grafika", desc: "O'yin industriyasi, raqamli animatsiya va vizual effektlar yaratish.", stipendiya: "$1,400+", universitetlar: 3 },
+  { id: 8, icon: "📊", badge: "Moliya", title: "Xalqaro Iqtisodiyot", desc: "Jahon moliyaviy bozorlari, xalqaro savdo va makroiqtisodiy tahlil.", stipendiya: "$1,000+", universitetlar: 20 },
 ];
 
-function YonalishCard({ item, onDetails }) {
-  const [hovered, setHovered] = useState(false);
+function YonalishCard({ item, onDetails, idx }) {
   const [expanded, setExpanded] = useState(false);
   const isMobile = useIsMobile();
   const showFull = !isMobile || expanded;
+  const isRed = idx % 2 === 0;
+
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        borderRadius: 14,
-        padding: "18px 16px",
-        border: `1px solid ${hovered ? item.accent + "88" : "#1e293b"}`,
-        cursor: "pointer",
-        transition: "all 0.2s",
-        boxShadow: hovered ? `0 6px 28px ${item.accent}33` : "none",
-        position: "relative",
-        overflow: "hidden",
-      }}
+      className={`bg-[#f9f5ea] border-2 ${isRed ? "border-[#c1121f] gazeta-shadow-red" : "border-[#111111] gazeta-shadow-black"} p-5 flex flex-col justify-between transition-transform hover:-translate-y-1`}
     >
-      {item.badge && (
-        <span style={{
-          position: "absolute", top: 12, right: 12,
-          background: item.badgeColor + "22",
-          color: item.badgeColor,
-          border: `1px solid ${item.badgeColor}55`,
-          borderRadius: 20, padding: "2px 10px",
-          fontSize: 10, fontWeight: 700,
-        }}>{item.badge}</span>
-      )}
-      <div style={{
-        width: 40, height: 40, borderRadius: 10,
-        background: item.accent + "22",
-        border: `1px solid ${item.accent}44`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 20, marginBottom: 12,
-      }}>{item.icon}</div>
-      <h3 style={{ color: "#fff", fontSize: 15, fontWeight: 700, margin: "0 0 6px" }}>{item.title}</h3>
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-2xl">{item.icon}</span>
+          {item.badge && (
+            <span className={`text-[10px] font-black uppercase px-2 py-0.5 newspaper-mono text-white ${isRed ? "bg-[#c1121f]" : "bg-[#111111]"}`}>
+              {item.badge}
+            </span>
+          )}
+        </div>
+        <h3 className="font-black text-base uppercase newspaper-headline text-[#111111] mb-2 leading-snug">{item.title}</h3>
 
-      {showFull && (
-        <>
-          <p style={{ color: "#64748b", fontSize: 12, lineHeight: 1.6, margin: "0 0 14px" }}>{item.desc}</p>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, fontSize: 11 }}>
-            <div>
-              <div style={{ color: "#64748b" }}>O'RTACHA MAOSH</div>
-              <div style={{ color: item.accent, fontWeight: 800, fontSize: 14 }}>{item.stipendiya}</div>
+        {showFull && (
+          <>
+            <p className="font-serif text-xs text-[#4b5563] leading-relaxed mb-4">{item.desc}</p>
+            <div className="grid grid-cols-2 gap-2 mb-4 bg-[#ede3cc] p-2 border border-[#111111]/20">
+              <div>
+                <div className="text-[#8b5a2b] uppercase tracking-widest text-[9px] newspaper-mono font-bold">O'rtacha Maosh</div>
+                <div className="font-black text-xs newspaper-mono text-[#111111]">{item.stipendiya}</div>
+              </div>
+              <div className="text-right">
+                <div className="text-[#8b5a2b] uppercase tracking-widest text-[9px] newspaper-mono font-bold">OTMlar</div>
+                <div className="font-black text-xs newspaper-mono text-[#111111]">{item.universitetlar} ta</div>
+              </div>
             </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ color: "#64748b" }}>UNIVERSITETLAR</div>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>{item.universitetlar} ta</div>
-            </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
 
-      {/* AI button - faqat mobilda ochilgan holatda */}
-      {isMobile && expanded && (
+      <div className="pt-2 border-t border-[#111111]/30 flex flex-col gap-1.5">
+        {isMobile && (
+          <button
+            onClick={() => setExpanded(e => !e)}
+            className="w-full py-1 text-[11px] font-bold text-[#4b5563] underline newspaper-mono cursor-pointer"
+          >
+            {expanded ? "Yopish ↑" : "Batafsil ma'lumot ↓"}
+          </button>
+        )}
         <button
           onClick={() => onDetails(item)}
-          style={{
-            background: "transparent",
-            border: `1px solid ${item.accent}`,
-            color: item.accent,
-            borderRadius: 8, padding: "6px 16px",
-            fontSize: 12, fontWeight: 600, cursor: "pointer",
-            transition: "background 0.2s",
-            width: "100%", marginBottom: 8,
-          }}
-          onMouseEnter={e => e.currentTarget.style.background = item.accent + "22"}
-          onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-        >🤖 AI maslahat olish</button>
-      )}
-
-      {/* Asosiy tugma: desktopda AI modal, mobilda ochish/yopish */}
-      <button
-        onClick={() => isMobile ? setExpanded(e => !e) : onDetails(item)}
-        style={{
-          background: "transparent",
-          border: `1px solid ${item.accent}`,
-          color: item.accent,
-          borderRadius: 8, padding: "6px 16px",
-          fontSize: 12, fontWeight: 600, cursor: "pointer",
-          transition: "background 0.2s",
-          width: "100%",
-        }}
-        onMouseEnter={e => e.currentTarget.style.background = item.accent + "22"}
-        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-      >{isMobile && expanded ? "Yopish ↑" : "Batafsil →"}</button>
+          className={`w-full py-2 text-xs font-black uppercase tracking-wider text-white ${isRed ? "bg-[#c1121f] hover:bg-[#111111]" : "bg-[#111111] hover:bg-[#c1121f]"} transition-colors cursor-pointer newspaper-mono`}
+        >
+          AI MASLAHAT →
+        </button>
+      </div>
     </div>
   );
 }
@@ -204,16 +90,13 @@ function AIModal({ item, onClose }) {
   const [question, setQuestion] = useState("");
 
   async function ask(prompt) {
-    setLoading(true);
-    setResult("");
+    setLoading(true); setResult("");
     try {
       const { answer, usingFallback } = await askGemini(prompt);
       if (usingFallback || !answer) {
         const { answer: fallback } = findBestAnswer(prompt);
         setResult(fallback || "Xatolik yuz berdi.");
-      } else {
-        setResult(answer);
-      }
+      } else { setResult(answer); }
     } catch {
       const { answer: fallback } = findBestAnswer(prompt);
       setResult(fallback || "Xatolik yuz berdi.");
@@ -223,93 +106,63 @@ function AIModal({ item, onClose }) {
 
   const suggestions = item ? [
     `"${item.title}" yo'nalishi bo'yicha O'zbekistonda qaysi universitetlar bor?`,
-    `"${item.title}" mutaxassisligi uchun qanday grantlar mavjud?`,
-    `"${item.title}" sohasida kelajak imkoniyatlari qanday?`,
+    `"${item.title}" sohasi bo'yicha grantlar va kontrakt narxlari qanday?`,
+    `"${item.title}" mutaxassislari qayerlarda ishlaydi?`,
   ] : [
     "Men uchun eng mos yo'nalishni toping.",
-    "O'zbekistonda eng so'ralayotgan mutaxassisliklar qaysilar?",
-    "Xorijda o'qish uchun qaysi yo'nalish yaxshi?",
+    "O'zbekistonda kelgusi 5 yilda eng talabgir kasblar qaysilar?",
   ];
 
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: "fixed", inset: 0, background: "#000000bb", zIndex: 1000,
-        display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
-      }}
-    >
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          background: "#111827", borderRadius: 20, padding: 28,
-          maxWidth: 500, width: "100%", border: "1px solid #334155",
-          maxHeight: "85vh", overflowY: "auto",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <h2 style={{ color: "#fff", fontSize: 17, fontWeight: 800, margin: 0 }}>🤖 AI Maslahatchi</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#64748b", fontSize: 20, cursor: "pointer" }}>✕</button>
+    <div onClick={onClose} className="fixed inset-0 bg-[#111111]/70 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+      <div onClick={e => e.stopPropagation()} className="bg-[#ede3cc] border-4 border-[#111111] w-full max-w-lg max-h-[85vh] overflow-y-auto gazeta-shadow-black">
+        <div className="flex items-center justify-between px-5 py-3 border-b-2 border-[#111111] bg-[#f4ecd8]">
+          <h2 className="text-xs font-black uppercase newspaper-mono text-[#c1121f]">★ AI MUTAXASSISLIK MASLAHATCHISI</h2>
+          <button onClick={onClose} className="w-7 h-7 border-2 border-[#111111] flex items-center justify-center font-black hover:bg-[#c1121f] hover:text-white transition-colors cursor-pointer">
+            ✕
+          </button>
         </div>
 
-        {item && (
-          <div style={{ background: "#1a2340", borderRadius: 10, padding: 12, marginBottom: 14, display: "flex", gap: 10, alignItems: "center" }}>
-            <span style={{ fontSize: 24 }}>{item.icon}</span>
-            <div>
-              <p style={{ color: "#64748b", fontSize: 11, margin: 0 }}>Tanlangan yo'nalish</p>
-              <p style={{ color: "#fff", fontSize: 14, fontWeight: 700, margin: 0 }}>{item.title}</p>
+        <div className="p-5 space-y-3">
+          {item && (
+            <div className="bg-[#f9f5ea] border border-[#111111] p-3 flex gap-3 items-center">
+              <span className="text-3xl">{item.icon}</span>
+              <div>
+                <p className="text-[10px] newspaper-mono uppercase font-bold text-[#8b5a2b]">Tanlangan Yo'nalish:</p>
+                <p className="font-black text-sm uppercase newspaper-headline text-[#111111]">{item.title}</p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 14 }}>
-          {suggestions.map(q => (
-            <button key={q} onClick={() => ask(q)} style={{
-              background: "#1a2340", border: "1px solid #334155",
-              color: "#94a3b8", borderRadius: 8, padding: "9px 14px",
-              fontSize: 12, cursor: "pointer", textAlign: "left",
-              transition: "border-color 0.15s",
-            }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = "#6366f1"}
-              onMouseLeave={e => e.currentTarget.style.borderColor = "#334155"}
-            >{q}</button>
-          ))}
+          <div className="space-y-1.5">
+            {suggestions.map(q => (
+              <button key={q} onClick={() => ask(q)}
+                className="w-full bg-[#f9f5ea] border border-[#111111] text-[#111111] px-3 py-2 text-xs text-left hover:bg-[#111111] hover:text-white transition-colors cursor-pointer newspaper-mono">
+                ➔ {q}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              value={question}
+              onChange={e => setQuestion(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && question.trim() && ask(question)}
+              placeholder="O'z savolingizni yozing..."
+              className="flex-1 px-3 py-2 text-xs"
+            />
+            <button onClick={() => question.trim() && ask(question)}
+              className="bg-[#c1121f] text-white px-4 font-black text-xs newspaper-mono hover:bg-[#111111] transition-colors cursor-pointer">→</button>
+          </div>
+
+          {loading && <div className="text-center py-6 text-xs newspaper-mono text-[#8b5a2b]">AI tahlil qilmoqda...</div>}
+          {result && (
+            <div className="border-2 border-[#111111] bg-[#f9f5ea] p-4">
+              <p className="text-[10px] newspaper-mono text-[#c1121f] mb-2 font-black">★ AI TAVSIYASI:</p>
+              <p className="font-serif text-xs leading-relaxed text-[#111111] whitespace-pre-wrap">{result}</p>
+            </div>
+          )}
         </div>
-
-        <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-          <input
-            value={question}
-            onChange={e => setQuestion(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && question.trim() && ask(question)}
-            placeholder="O'z savolingizni yozing..."
-            style={{
-              flex: 1, background: "#1a2340", border: "1px solid #334155",
-              borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 13, outline: "none",
-            }}
-          />
-          <button
-            onClick={() => question.trim() && ask(question)}
-            style={{
-              background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-              border: "none", borderRadius: 8, padding: "10px 16px",
-              color: "#fff", cursor: "pointer", fontWeight: 700, fontSize: 13,
-            }}
-          >↵</button>
-        </div>
-
-        {loading && (
-          <div style={{ textAlign: "center", padding: 20, color: "#6366f1" }}>
-            <div style={{ fontSize: 28, marginBottom: 8, animation: "spin 1s linear infinite" }}>⟳</div>
-            <p style={{ margin: 0, fontSize: 13 }}>AI javob tayyorlamoqda...</p>
-          </div>
-        )}
-
-        {result && (
-          <div style={{ background: "#1a2340", borderRadius: 12, padding: 16, border: "1px solid #6366f133" }}>
-            <p style={{ color: "#00e5a0", fontSize: 11, margin: "0 0 8px", fontWeight: 700 }}>🤖 AI JAVOBI</p>
-            <p style={{ color: "#e2e8f0", fontSize: 13, lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{result}</p>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -322,24 +175,22 @@ function TestModal({ onClose }) {
   const [loading, setLoading] = useState(false);
 
   const questions = [
-    { q: "Qaysi soha sizni qiziqtiradi?", opts: ["Texnologiya", "Tibbiyot", "Biznes", "San'at va dizayn"] },
-    { q: "Qaysi ko'nikma sizga yaqin?", opts: ["Tahlil va mantiq", "Ijodkorlik", "Muloqot", "Texnik ko'nikmalar"] },
-    { q: "Kelajakda qayerda ishlashni xohlaysiz?", opts: ["IT kompaniya", "Shifoxona", "Biznes", "Xalqaro tashkilot"] },
-    { q: "O'qish davomiyligini qanday ko'rasiz?", opts: ["2 yil", "4 yil", "6 yil+", "Online ta'lim"] },
+    { q: "Qaysi soha sizga ko'proq zavq beradi?", opts: ["Texnologiya va Dasturlash", "Tibbiyot va Inson Salomatligi", "Moliya va Biznes Boshqaruvi", "San'at, Grafika va Dizayn"] },
+    { q: "Qaysi xarakter sizga yaqinroq?", opts: ["Mantiqiy tahlil va kod yozish", "Odamlarga yordam berish va hamdardlik", "Muzokara olib borish va yetakchilik", "Ijodiy fikrlash va tasavvur"] },
+    { q: "Kelajakda qayerda ishlashni orzu qilasiz?", opts: ["Xalqaro IT gigantida", "Zamonaviy shifoxona yoki laboratoriyada", "O'z shaxsiy biznesingizda", "Xalqaro tashkilotlarda"] },
+    { q: "O'qish tili va formati qanday bo'lishi ma'qul?", opts: ["Ingliz tilida, xalqaro diplom", "O'zbek tilida, davlat universiteti", "Amaliy va tezkor kurslar bilan"] },
   ];
 
   async function getResult() {
     setLoading(true);
     const summary = Object.entries(answers).map(([i, a]) => `${questions[i].q}: ${a}`).join("; ");
-    const prompt = `Quyidagi javoblar asosida eng mos 2-3 ta ta'lim yo'nalishini tavsiya qil va qisqa tushuntir:\n${summary}`;
+    const prompt = `Quyidagi javoblar asosida abituriyentga eng mos 2-3 ta OTM yo'nalishini tavsiya qil va nima uchun mosligini qisqa tushuntir:\n${summary}`;
     try {
       const { answer, usingFallback } = await askGemini(prompt);
       if (usingFallback || !answer) {
         const { answer: fallback } = findBestAnswer(prompt);
         setResult(fallback || "Xatolik yuz berdi.");
-      } else {
-        setResult(answer);
-      }
+      } else { setResult(answer); }
     } catch {
       const { answer: fallback } = findBestAnswer(prompt);
       setResult(fallback || "Xatolik yuz berdi.");
@@ -348,67 +199,55 @@ function TestModal({ onClose }) {
   }
 
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "#000000bb", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: "#111827", borderRadius: 20, padding: 28, maxWidth: 460, width: "100%", border: "1px solid #334155" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <h2 style={{ color: "#fff", fontSize: 17, fontWeight: 800, margin: 0 }}>🎯 Yo'nalish Testi</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#64748b", fontSize: 20, cursor: "pointer" }}>✕</button>
+    <div onClick={onClose} className="fixed inset-0 bg-[#111111]/70 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+      <div onClick={e => e.stopPropagation()} className="bg-[#ede3cc] border-4 border-[#111111] w-full max-w-md gazeta-shadow-black p-6">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-[#111111] mb-4">
+          <h2 className="text-xs font-black uppercase newspaper-mono text-[#c1121f]">★ KASBGA YO'NALTIRISH TESTI</h2>
+          <button onClick={onClose} className="w-7 h-7 border-2 border-[#111111] flex items-center justify-center font-black hover:bg-[#c1121f] hover:text-white transition-colors cursor-pointer">
+            ✕
+          </button>
         </div>
 
         {!result ? (
           <>
-            {/* Progress */}
-            <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
+            <div className="flex gap-1 mb-4">
               {questions.map((_, i) => (
-                <div key={i} style={{
-                  flex: 1, height: 4, borderRadius: 2,
-                  background: i <= step ? "linear-gradient(90deg,#6366f1,#8b5cf6)" : "#1e293b",
-                  transition: "background 0.3s",
-                }} />
+                <div key={i} className={`flex-1 h-1.5 ${i <= step ? "bg-[#c1121f]" : "bg-[#111111]/20"}`} />
               ))}
             </div>
-
-            <p style={{ color: "#64748b", fontSize: 12, margin: "0 0 8px" }}>Savol {step + 1} / {questions.length}</p>
-            <h3 style={{ color: "#fff", fontSize: 16, fontWeight: 700, margin: "0 0 16px" }}>{questions[step].q}</h3>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <p className="newspaper-mono text-[10px] font-bold text-[#8b5a2b] uppercase mb-1">Savol {step + 1} / {questions.length}</p>
+            <h3 className="font-black text-sm uppercase newspaper-headline text-[#111111] mb-4">{questions[step].q}</h3>
+            <div className="space-y-2">
               {questions[step].opts.map(opt => (
-                <button key={opt} onClick={() => {
-                  const newAns = { ...answers, [step]: opt };
-                  setAnswers(newAns);
-                  if (step < questions.length - 1) {
-                    setStep(step + 1);
-                  } else {
-                    getResult();
-                  }
-                }} style={{
-                  background: "#1a2340", border: "1px solid #334155",
-                  color: "#e2e8f0", borderRadius: 10, padding: "12px 16px",
-                  fontSize: 13, cursor: "pointer", textAlign: "left",
-                  transition: "all 0.15s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.color = "#fff"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "#334155"; e.currentTarget.style.color = "#e2e8f0"; }}
-                >{opt}</button>
+                <button
+                  key={opt}
+                  onClick={() => {
+                    const newAns = { ...answers, [step]: opt };
+                    setAnswers(newAns);
+                    if (step < questions.length - 1) { setStep(step + 1); }
+                    else { getResult(); }
+                  }}
+                  className="w-full bg-[#f9f5ea] border border-[#111111] p-2.5 text-xs text-left font-serif hover:bg-[#111111] hover:text-white transition-colors cursor-pointer"
+                >
+                  {opt}
+                </button>
               ))}
             </div>
           </>
         ) : loading ? (
-          <div style={{ textAlign: "center", padding: 30, color: "#6366f1" }}>
-            <div style={{ fontSize: 32, marginBottom: 10 }}>⟳</div>
-            <p style={{ margin: 0 }}>AI tahlil qilmoqda...</p>
-          </div>
+          <div className="text-center py-8 newspaper-mono text-xs text-[#8b5a2b]">AI tahlil qilmoqda...</div>
         ) : (
-          <div>
-            <div style={{ background: "#1a2340", borderRadius: 12, padding: 16, border: "1px solid #6366f133", marginBottom: 14 }}>
-              <p style={{ color: "#00e5a0", fontSize: 11, margin: "0 0 8px", fontWeight: 700 }}>🤖 AI TAVSIYASI</p>
-              <p style={{ color: "#e2e8f0", fontSize: 13, lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap" }}>{result}</p>
+          <div className="space-y-4">
+            <div className="bg-[#f9f5ea] border-2 border-[#111111] p-4">
+              <p className="text-[10px] newspaper-mono text-[#c1121f] mb-2 font-black">★ TEST XULOSASI:</p>
+              <p className="font-serif text-xs leading-relaxed text-[#111111] whitespace-pre-wrap">{result}</p>
             </div>
-            <button onClick={() => { setStep(0); setAnswers({}); setResult(""); }} style={{
-              background: "transparent", border: "1px solid #334155",
-              color: "#94a3b8", borderRadius: 8, padding: "8px 16px",
-              fontSize: 12, cursor: "pointer", width: "100%",
-            }}>Qayta boshlash</button>
+            <button
+              onClick={() => { setStep(0); setAnswers({}); setResult(""); }}
+              className="w-full py-2 bg-[#111111] text-white font-black text-xs uppercase newspaper-mono hover:bg-[#c1121f] transition-colors cursor-pointer"
+            >
+              Qayta Boshlash
+            </button>
           </div>
         )}
       </div>
@@ -416,17 +255,16 @@ function TestModal({ onClose }) {
   );
 }
 
-export default function EduUZYonalishlar() {
+export default function Majors() {
   const [majorsList, setMajorsList] = useState(YONALISHLAR);
   const [modal, setModal] = useState(null);
   const [testOpen, setTestOpen] = useState(false);
-  const [consultOpen, setConsultOpen] = useState(false);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetch("/api/majors")
-      .then((res) => res.json())
-      .then((resData) => {
+      .then(res => res.json())
+      .then(resData => {
         if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
           setMajorsList(resData.data);
         }
@@ -440,90 +278,65 @@ export default function EduUZYonalishlar() {
   );
 
   return (
-    <div style={{ minHeight: "100vh", fontFamily: "'Inter','Segoe UI',sans-serif", color: "#fff" }}>
-      {/* Hero */}
-      <header style={{ textAlign: "center", padding: "56px 20px 36px" }}>
-        <h1 style={{ fontSize: "clamp(26px,5vw,46px)", fontWeight: 900, margin: "0 0 12px", lineHeight: 1.2 }}>
-          Kelajagingizni Tanlang
+    <div className="min-h-screen bg-[#f4ecd8] text-[#111111] pb-12 sm:pb-16">
+      {/* Header */}
+      <header className="border-b-2 border-[#111111] max-w-5xl mx-auto px-3 pt-6 pb-6 sm:pt-10 sm:pb-8 text-center">
+        <span className="gazeta-stamp-red mb-2 sm:mb-3 text-[9px] sm:text-xs">★ MUTAXASSISLIKLAR BO'LIMI ★</span>
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight mb-2 sm:mb-3 leading-tight newspaper-headline">
+          TALAB YUQORI BO'LGAN <br />
+          <span className="text-[#c1121f] underline decoration-2 sm:decoration-4 underline-offset-4">TA'LIM YO'NALISHLARI</span>
         </h1>
-        <p style={{ color: "#94a3b8", fontSize: 14, maxWidth: 460, margin: "0 auto 28px", lineHeight: 1.6 }}>
-          O'zbekistonning eng yaxshi universitetlaridagi barcha yo'nalishlar, talablar va imkoniyatlar bir joyda.
+        <p className="font-serif text-xs sm:text-sm text-[#4b5563] max-w-lg mx-auto mb-4 sm:mb-6 leading-relaxed px-2">
+          O'zbekiston mehnat bozorida yuqori maoshli va kafolatlangan karyera taklif qiluvchi sohalar tahlili.
         </p>
 
-        {/* Search */}
-        <div className="max-w-[600px] mx-auto bg-[#111827] border border-[#1e293b] rounded-xl px-4 py-2.5 flex gap-2.5 items-center">
-          <span className="text-[#475569] text-[15px]">🔍</span>
+        {/* Qidiruv */}
+        <div className="max-w-xl mx-auto flex gap-2 border-2 border-[#111111] p-1.5 sm:p-2 bg-[#f9f5ea] gazeta-shadow-black">
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Yo'nalish qidiring..."
-            className="flex-1 bg-transparent border-none text-white text-[13px] outline-none"
+            placeholder="Yo'nalish nomi bo'yicha..."
+            className="flex-1 bg-transparent border-none outline-none text-xs font-serif min-w-0"
           />
-          {/* Tavsiya tugmalari - faqat desktopda */}
-          <div className="hidden md:flex gap-1.5">
-            {["Bakalavr", "IT", "Biznes", "Tibbiyot"].map(f => (
-              <button key={f} onClick={() => setSearch(f)} className="bg-[#1a2340] border border-[#334155] text-[#94a3b8] rounded-full px-3 py-1 text-[11px] cursor-pointer whitespace-nowrap">{f}</button>
-            ))}
-          </div>
+          <button
+            onClick={() => setTestOpen(true)}
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#111111] text-white font-black text-[10px] sm:text-xs uppercase newspaper-mono hover:bg-[#c1121f] transition-colors cursor-pointer shrink-0"
+          >
+            🎯 KASB TESTI
+          </button>
         </div>
       </header>
 
-      <main className="max-w-[860px] mx-auto px-4 pb-10">
-        {/* Grid - mobilda 2 ustun, desktopda auto-fill */}
-        <div className="grid grid-cols-2 gap-3.5 mb-9 md:grid-cols-[repeat(auto-fill,minmax(190px,1fr))]">
-          {filtered.map(item => (
-            <YonalishCard key={item.id} item={item} onDetails={setModal} />
+      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+          {filtered.map((item, idx) => (
+            <YonalishCard key={item.id} item={item} onDetails={setModal} idx={idx} />
           ))}
         </div>
 
-        {/* CTA Banner */}
-        <div style={{
-          borderRadius: 18, padding: "32px 28px",
-          border: "1px solid #334155",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          flexWrap: "wrap", gap: 20,
-        }}>
-          <div style={{ maxWidth: 380 }}>
-            <h2 style={{ color: "#fff", fontSize: 20, fontWeight: 800, margin: "0 0 8px" }}>
-              Qaysi yo'nalish sizga mos?
-            </h2>
-            <p style={{ color: "#64748b", fontSize: 13, lineHeight: 1.6, margin: 0 }}>
-              Bizning sun'iy intellektga asoslangan testni topshiring va qobiliyatingizga eng mos keladigan universitet yo'nalishini aniqlang.
+        {/* Banner */}
+        <div className="bg-[#ede3cc] border-4 border-[#111111] p-6 sm:p-8 gazeta-shadow-black flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="max-w-md">
+            <span className="text-xs font-black uppercase text-[#c1121f] newspaper-mono">// INTERAKTIV XIZMAT</span>
+            <h3 className="text-xl font-black uppercase newspaper-headline text-[#111111] mt-1 mb-2">
+              QAYSI YO'NALISH SIZGA MOSLIGINI BILMAYAPSIZMI?
+            </h3>
+            <p className="font-serif text-xs text-[#4b5563] leading-relaxed">
+              Sun'iy intellekt asosidagi qisqa 4 ta savolli testni topshiring va shaxsiy qobiliyatingizga mos yo'nalishlarni aniqlang.
             </p>
           </div>
           <button
             onClick={() => setTestOpen(true)}
-            style={{
-              background: "linear-gradient(135deg, #a855f7, #6366f1)",
-              border: "none", borderRadius: 12, padding: "13px 28px",
-              color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer",
-              whiteSpace: "nowrap",
-              boxShadow: "0 4px 20px #6366f155",
-            }}
-          >Testdan o'tish →</button>
+            className="px-6 py-3.5 bg-[#c1121f] text-white font-black text-xs uppercase tracking-widest border-2 border-[#111111] gazeta-shadow-black hover:bg-[#111111] transition-all cursor-pointer newspaper-mono shrink-0"
+          >
+            TESTNI TOPSHIRISH →
+          </button>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer style={{
-        borderTop: "1px solid #1e293b", padding: "20px 16px",
-        maxWidth: 860, margin: "0 auto",
-        display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
-      }}>
-        <div>
-          <div style={{ color: "#fff", fontWeight: 800, fontSize: 16 }}>EduUZ</div>
-          <p style={{ color: "#475569", fontSize: 11, margin: "4px 0 0" }}>© 2024 EduUZ. Modernizing Uzbek Higher Education.</p>
-        </div>
-        <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-          {["About Us", "Privacy Policy", "Contact Support", "Terms of Service"].map(l => (
-            <a key={l} href="#" style={{ color: "#475569", fontSize: 11, textDecoration: "none" }}>{l}</a>
-          ))}
-        </div>
-      </footer>
-
       {modal && <AIModal item={modal} onClose={() => setModal(null)} />}
       {testOpen && <TestModal onClose={() => setTestOpen(false)} />}
-      {consultOpen && <AIModal item={null} onClose={() => setConsultOpen(false)} />}
     </div>
   );
 }

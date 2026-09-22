@@ -2,93 +2,202 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-[#111111] text-[#f4f1ea];
+/* ==============================================================
+   EDUUZ EDITORIAL NEWSPAPER DESIGN SYSTEM
+   Asosiy fon: wheat (bug'doy qog'oz)
+   Second ranglar: Qizil (#b91c1c) va Qora (#111111) — ziddiyatli, random
+   3-darajali: Jigarrang (#5c3d2e), Kulrang (#4b5563), Yog'och (#8b5a2b)
+   ============================================================== */
+
+:root {
+  --bg-wheat: #f4ecd8;
+  --bg-wheat-paper: #ede3cc;
+  --bg-wheat-card: #f9f5ea;
+  --ink-black: #111111;
+  --press-red: #c1121f;
+  --ink-gray: #4b5563;
+  --wood-brown: #8b5a2b;
+  --dark-sepia: #5c3d2e;
 }
 
-html,
-body {
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
   overflow-x: hidden;
+  background-color: var(--bg-wheat) !important;
+  color: var(--ink-black) !important;
+  font-family: 'Merriweather', Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(#d3c6ab 0.75px, transparent 0.75px), radial-gradient(#d3c6ab 0.75px, var(--bg-wheat) 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
 }
 
-/* Yumshoq nur blob'lari — sahifaga nozik harakat beradi */
-@keyframes glow-pulse {
-  0%,
-  100% {
-    opacity: 0.04;
-  }
-  50% {
-    opacity: 0.32;
-  }
+/* Sarlavhalar uchun gazeta shrifti */
+h1, h2, h3, .newspaper-headline {
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
-.glow-blob {
-  animation: glow-pulse var(--gd, 6s) ease-in-out var(--gdd, 0s) infinite;
+.newspaper-title {
+  font-family: 'Cinzel', Georgia, serif;
 }
 
-.chat-scroll::-webkit-scrollbar {
-  width: 4px;
+.newspaper-mono, code, .typewriter {
+  font-family: 'Courier Prime', 'Space Mono', monospace;
 }
 
-.chat-scroll::-webkit-scrollbar-track {
-  background: transparent;
+/* Gazeta ramkalari va chiziqlari */
+.border-gazeta-black {
+  border: 2px solid var(--ink-black);
 }
 
-.chat-scroll::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 999px;
+.border-gazeta-red {
+  border: 2px solid var(--press-red);
 }
 
-.chat-scroll::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+.border-gazeta-wood {
+  border: 2px solid var(--wood-brown);
 }
 
-*::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.border-gazeta-double {
+  border: 4px double var(--ink-black);
 }
 
-*::-webkit-scrollbar-track {
-  background: #111111;
+.border-gazeta-double-red {
+  border: 4px double var(--press-red);
 }
 
-*::-webkit-scrollbar-thumb {
-  background: #343434;
-  border-radius: 999px;
+.border-gazeta-dashed {
+  border: 2px dashed var(--ink-black);
 }
 
-*::-webkit-scrollbar-thumb:hover {
-  background: #4a4a4a;
+.border-gazeta-dashed-red {
+  border: 2px dashed var(--press-red);
 }
 
-.gradient-before-after {
+/* Gazeta qirqiladigan kupon effekti */
+.coupon-scissors {
   position: relative;
-  background: linear-gradient(135deg, #8b5cf6, #3b82f6, #ef4444, #22c55e);
-  background-size: 300% 300%;
-  animation: gradient-shift 4s ease infinite;
+}
+.coupon-scissors::before {
+  content: "✂ ----------------------------------------------------";
+  display: block;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--ink-gray);
+  margin-bottom: 8px;
+  font-family: 'Courier Prime', monospace;
 }
 
-.gradient-before-after::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(225deg, #8b5cf6, #3b82f6, #ef4444, #22c55e);
-  background-size: 300% 300%;
-  animation: gradient-shift 4s ease infinite reverse;
-  opacity: 0.5;
-  z-index: -1;
-  filter: blur(20px);
+/* Qattiq bosma soya (Halftone / Offset ink shadow) */
+.gazeta-shadow-black {
+  box-shadow: 4px 4px 0px var(--ink-black);
 }
 
-.gradient-before-after::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
-  z-index: 1;
+.gazeta-shadow-red {
+  box-shadow: 4px 4px 0px var(--press-red);
 }
 
+.gazeta-shadow-wood {
+  box-shadow: 4px 4px 0px var(--wood-brown);
+}
+
+/* Gazeta shtampi (Stamp / Seal) */
+.gazeta-stamp-red {
+  display: inline-block;
+  padding: 4px 12px;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-family: 'Courier Prime', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--press-red);
+  border: 2px solid var(--press-red);
+  transform: rotate(-3deg);
+  background: rgba(193, 18, 31, 0.05);
+  box-shadow: inset 0 0 0 1px var(--press-red);
+}
+
+.gazeta-stamp-black {
+  display: inline-block;
+  padding: 4px 12px;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-family: 'Courier Prime', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--ink-black);
+  border: 2px solid var(--ink-black);
+  transform: rotate(2deg);
+  background: rgba(17, 17, 17, 0.05);
+  box-shadow: inset 0 0 0 1px var(--ink-black);
+}
+
+/* Marquee / Yuguruvchi xabarlar tasmasi */
+@keyframes newspaper-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-newspaper-ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: newspaper-ticker 35s linear infinite;
+}
+
+.animate-newspaper-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Scroll va g'ayritabiiy qog'oz effekti */
+@keyframes paper-pop {
+  0% { transform: scale(0.98) translateY(8px); opacity: 0.8; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.newspaper-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.newspaper-card-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0px var(--ink-black);
+}
+
+.newspaper-card-hover-red:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0px var(--press-red);
+}
+
+/* Gazeta scrollbar */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: var(--bg-wheat-paper);
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--dark-sepia);
+  border: 1px solid var(--ink-black);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-black);
+}
+
+/* Form inputlari */
+input, textarea, select {
+  background-color: var(--bg-wheat-card) !important;
+  color: var(--ink-black) !important;
+  border: 2px solid var(--ink-black) !important;
+  font-family: 'Courier Prime', monospace !important;
+  border-radius: 0 !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none !important;
+  border-color: var(--press-red) !important;
+  box-shadow: 3px 3px 0px var(--press-red) !important;
+}
